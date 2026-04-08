@@ -36,24 +36,6 @@ function actualizarHora() {
 setInterval(actualizarHora, 1000);
 actualizarHora();
 
-// Inicializar mapa cuando cargue el DOM
-document.addEventListener("DOMContentLoaded",function(){
-  var map = L.map('mapa').setView([4.6097,-74.0817],13);
-
-  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{
-    maxZoom:19,
-    attribution:'© OpenStreetMap'
-  }).addTo(map);
-
-  L.marker([4.6097,-74.0817])
-    .addTo(map)
-    .bindPopup("Institución Educativa Central - Cupos: 25");
-
-  L.marker([4.6150,-74.0750])
-    .addTo(map)
-    .bindPopup("Colegio Técnico Industrial - Cupos: 12");
-});
-
 document.addEventListener("DOMContentLoaded", function () {
 
     const botones = document.querySelectorAll(".inscribirse-btn");
@@ -195,8 +177,62 @@ document.querySelectorAll(".inscribirse-btn").forEach(btn => {
     });
 });
 
-
-// FORMULARIO INSCRIPCIÓN
+// GUARDAR INSCRIPCIÓN
 document.querySelector("#inscripcion .btn").addEventListener("click", function(){
-    alert("Inscripción enviada correctamente 🎓");
+
+    const nombre = document.getElementById("nombreEstudiante").value;
+    const email = document.getElementById("emailEstudiante").value;
+    const colegio = document.getElementById("colegioSeleccionado").value;
+
+    if(nombre && colegio && email){
+
+        let solicitudes = JSON.parse(localStorage.getItem("solicitudes")) || [];
+
+        solicitudes.push({
+            nombre: nombre,
+            colegio: colegio,
+            email: email,
+            estado: "Pendiente"
+        });
+
+        localStorage.setItem("solicitudes", JSON.stringify(solicitudes));
+
+        alert("Inscripción guardada correctamente ✅");
+
+    } else {
+        alert("Completa todos los campos ❌");
+    }
+});
+
+
+// CONSULTAR ESTADO
+document.querySelector("#estado form").addEventListener("submit", function(e){
+    e.preventDefault();
+
+    const correo = document.getElementById("correoConsulta").value;
+
+    let solicitudes = JSON.parse(localStorage.getItem("solicitudes")) || [];
+
+    let resultado = document.getElementById("resultadoEstado");
+
+    resultado.innerHTML = "";
+
+    let encontrados = solicitudes.filter(s => s.email === correo);
+
+    if(encontrados.length > 0){
+
+        encontrados.forEach(s => {
+            resultado.innerHTML += `
+                <div class="card">
+                    <h3>Resultado de la solicitud</h3>
+                    <p><strong>Nombre:</strong> ${s.nombre}</p>
+                    <p><strong>Colegio:</strong> ${s.colegio}</p>
+                    <p><strong>Estado:</strong> ${s.estado}</p>
+                </div>
+            `;
+        });
+
+    } else {
+        resultado.innerHTML = "<p>No se encontraron solicitudes ❌</p>";
+    }
 });

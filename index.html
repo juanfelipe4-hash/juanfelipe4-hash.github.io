@@ -171,13 +171,10 @@
     <p>Colegio seleccionado:</p>
     <input type="text" id="colegioSeleccionado" readonly>
 
-    <p>Nombre y apellido del estudiante:</p>
-
-    <input type="text">
         <!-- DATOS DEL ESTUDIANTE -->
         <div class="bloque">
             <p>Nombre y apellido del estudiante:</p>
-            <input type="text">
+            <input type="text" id="nombreEstudiante">
 
             <p>Fecha de nacimiento:</p>
             <input type="date">
@@ -192,7 +189,7 @@
             <input type="text">
 
             <p>Correo electrónico:</p>
-            <input type="email">
+            <input type="email" id="emailEstudiante">
         </div>
 
         <!-- FOTO -->
@@ -219,7 +216,7 @@
             <input type="text">
         </div>
 
-        <button class="btn">Enviar inscripción</button>
+        <button type="button" class="btn">Enviar inscripción</button>
 
     </div>
 </section>
@@ -230,10 +227,11 @@
         <form>
             <div class="form-group">
                 <label>Correo registrado</label>
-                <input type="email">
+                <input type="email" id="correoConsulta">
             </div>
             <button type="submit" class="btn">Consultar</button>
         </form>
+        <div id="resultadoEstado"></div>
     </section>
 
     <!-- DASHBOARD -->

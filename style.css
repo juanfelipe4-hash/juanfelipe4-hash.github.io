@@ -16,10 +16,12 @@
     padding: 15px 30px;
 }
 
-.header .logo img {
+.logo img {
+    width: 40px;
     height: 40px;
-    margin-right: 10px;
-    vertical-align: middle;
+    border-radius: 50%;
+    background: white;
+    padding: 5px;
 }
 
 .nav-links {
@@ -36,17 +38,6 @@
 
 .nav-links a:hover {
     text-decoration: underline;
-}
-
-/* Hero */
-.hero {
-    text-align: center;
-    padding: 60px 20px;
-    background: #e6f2ff;
-    margin: 20px auto;
-    border-radius: 10px;
-    max-width: 1000px;
-    box-shadow: 0 2px 6px rgb(255, 252, 252);
 }
 
 .hero h1 {
@@ -87,19 +78,6 @@ input, select {
     border-radius: 5px;
 }
 
-.btn {
-    background: #004080;
-    color: #fff;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-.btn:hover {
-    background: #0066cc;
-}
-
 /* Tarjetas */
 .card, .colegio-card {
     background: #fff;
@@ -116,15 +94,6 @@ input, select {
     gap: 15px;
 }
 
-/* Mapa */
-#mapa {
-    height: 400px;
-    width: 100%;
-    margin-top: 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 6px rgba(231, 228, 228, 0.1);
-}
-
 /* Footer */
 .footer {
     text-align: center;
@@ -132,19 +101,6 @@ input, select {
     background: #398de2;
     color: #fff;
     margin-top: 40px;
-}
-
-/* Contenedor del menú de animación */
-.options {
-    display: flex;
-    justify-content: center;
-    gap: 15px;
-    margin: 20px auto;
-    padding: 20px;
-    max-width: 600px;
-    background: #f9f9f9;
-    border-radius: 10px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
 }
 
 /* Cada opción */
@@ -204,18 +160,6 @@ input, select {
     color: #fff;
 }
 
-.options {
-    display: flex;
-    justify-content: center;
-    gap: 15px;
-    margin: 20px auto;
-    padding: 20px;
-    max-width: 600px;
-    background: #f9f9f9;
-    border-radius: 10px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-}
-
 .option {
     flex: 1;
     text-align: center;
@@ -259,8 +203,8 @@ input, select {
 
 /* Colores según hora */
 .hero.mañana {
-  background: linear-gradient(to right, #87CEEB, #f0f8ff);
-  color: #e2f066;
+  background: linear-gradient(to right, #15bafc, #f8a705);
+  color: #9e5400;
 }
 
 .hero.tarde {
@@ -337,7 +281,7 @@ input, select {
 }
 
 .foto {
-    border: 2px solid black;
+    border: 2px solid rgb(0, 0, 0);
     padding: 20px;
     text-align: center;
 }
@@ -357,17 +301,6 @@ body {
     font-family: 'Segoe UI', sans-serif;
     background: linear-gradient(135deg, #1e3a8a, #0f172a);
     margin: 0;
-}
-
-/* CONTENEDORES */
-.section {
-    background: #ffffff;
-    margin: 30px auto;
-    padding: 25px;
-    border-radius: 15px;
-    width: 90%;
-    max-width: 800px;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
 }
 
 /* TITULOS */
@@ -423,13 +356,6 @@ input:focus, select:focus {
     display: flex;
     justify-content: space-between;
     align-items: center;
-}
-
-/* MAPA */
-#mapa {
-    height: 300px;
-    margin-top: 20px;
-    border-radius: 10px;
 }
 
 #resultadoEstado {

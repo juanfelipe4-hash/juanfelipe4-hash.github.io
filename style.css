@@ -383,7 +383,7 @@ input, select {
     margin-top: 8px;
     margin-bottom: 15px;
     border-radius: 10px;
-    border: 1px solid #fcfcfc;
+    border: 1px solid #000000;
     font-size: 15px;
     outline: none;
     transition: 0.3s;

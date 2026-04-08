@@ -144,3 +144,59 @@ function inscribirseDesdeMapa(nombreColegio) {
     localStorage.setItem("colegioSeleccionado", nombreColegio);
     window.location.href = "#inscripcion";
 }
+
+// REGISTRO
+document.querySelector("#registro form").addEventListener("submit", function(e){
+    e.preventDefault();
+
+    const inputs = this.querySelectorAll("input");
+    let valido = true;
+
+    inputs.forEach(input => {
+        if(input.value.trim() === ""){
+            valido = false;
+        }
+    });
+
+    if(valido){
+        alert("Registro exitoso ✅");
+    } else {
+        alert("Complete todos los campos ❌");
+    }
+});
+
+
+// LOGIN
+document.querySelector("#login form").addEventListener("submit", function(e){
+    e.preventDefault();
+
+    const email = this.querySelector("input[type='email']").value;
+    const pass = this.querySelector("input[type='password']").value;
+
+    if(email && pass){
+        alert("Ingreso exitoso ✅");
+    } else {
+        alert("Datos incorrectos ❌");
+    }
+});
+
+
+// BOTONES INSCRIBIRSE
+document.querySelectorAll(".inscribirse-btn").forEach(btn => {
+    btn.addEventListener("click", function(){
+        const colegio = this.getAttribute("data-colegio");
+
+        document.getElementById("colegioSeleccionado").value = colegio;
+
+        // Baja automático al formulario
+        document.getElementById("inscripcion").scrollIntoView({
+            behavior: "smooth"
+        });
+    });
+});
+
+
+// FORMULARIO INSCRIPCIÓN
+document.querySelector("#inscripcion .btn").addEventListener("click", function(){
+    alert("Inscripción enviada correctamente 🎓");
+});

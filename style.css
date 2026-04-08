@@ -352,3 +352,82 @@ html {
     margin-top: 20px;
     border-radius: 15px;
 }
+
+body {
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, #1e3a8a, #0f172a);
+    margin: 0;
+}
+
+/* CONTENEDORES */
+.section {
+    background: #ffffff;
+    margin: 30px auto;
+    padding: 25px;
+    border-radius: 15px;
+    width: 90%;
+    max-width: 800px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+
+/* TITULOS */
+.section h2 {
+    color: #1e3a8a;
+    margin-bottom: 20px;
+}
+
+/* INPUTS */
+input, select {
+    width: 100%;
+    padding: 14px;
+    margin-top: 8px;
+    margin-bottom: 15px;
+    border-radius: 10px;
+    border: 1px solid #fcfcfc;
+    font-size: 15px;
+    outline: none;
+    transition: 0.3s;
+}
+
+/* EFECTO INPUT */
+input:focus, select:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 5px rgba(37,99,235,0.5);
+}
+
+/* BOTONES */
+.btn {
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(135deg, #2563eb, #1e3a8a);
+    color: rgb(7, 6, 6);
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+/* HOVER */
+.btn:hover {
+    transform: scale(1.03);
+    background: linear-gradient(135deg, #1e3a8a, #0f172a);
+}
+
+/* CARDS */
+.colegio-card {
+    background: rgb(197, 125, 125);
+    padding: 15px;
+    margin: 10px 0;
+    border-radius: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* MAPA */
+#mapa {
+    height: 300px;
+    margin-top: 20px;
+    border-radius: 10px;
+}

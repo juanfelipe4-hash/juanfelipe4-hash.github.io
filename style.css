@@ -1,0 +1,354 @@
+/* Reset básico */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+/* Header */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #0252a1;
+    color: #ffffff;
+    padding: 15px 30px;
+}
+
+.header .logo img {
+    height: 40px;
+    margin-right: 10px;
+    vertical-align: middle;
+}
+
+.nav-links {
+    list-style: none;
+    display: flex;
+    gap: 20px;
+}
+
+.nav-links a {
+    color: #fff;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.nav-links a:hover {
+    text-decoration: underline;
+}
+
+/* Hero */
+.hero {
+    text-align: center;
+    padding: 60px 20px;
+    background: #e6f2ff;
+    margin: 20px auto;
+    border-radius: 10px;
+    max-width: 1000px;
+    box-shadow: 0 2px 6px rgb(255, 252, 252);
+}
+
+.hero h1 {
+    font-size: 2.5rem;
+    margin-bottom: 15px;
+}
+
+/* Secciones en cuadros */
+.section {
+    background: #f9f9f9;
+    padding: 30px 20px;
+    margin: 20px auto;
+    max-width: 1000px;
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.section h2 {
+    margin-bottom: 20px;
+    color: #042f8b;
+}
+
+/* Formularios */
+.form-group {
+    margin-bottom: 15px;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+input, select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.btn {
+    background: #004080;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.btn:hover {
+    background: #0066cc;
+}
+
+/* Tarjetas */
+.card, .colegio-card {
+    background: #fff;
+    padding: 20px;
+    margin: 15px 0;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+/* Lista de colegios */
+.lista-colegios {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+/* Mapa */
+#mapa {
+    height: 400px;
+    width: 100%;
+    margin-top: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(231, 228, 228, 0.1);
+}
+
+/* Footer */
+.footer {
+    text-align: center;
+    padding: 20px;
+    background: #398de2;
+    color: #fff;
+    margin-top: 40px;
+}
+
+/* Contenedor del menú de animación */
+.options {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin: 20px auto;
+    padding: 20px;
+    max-width: 600px;
+    background: #f9f9f9;
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+/* Cada opción */
+.option {
+    flex: 1;
+    text-align: center;
+    padding: 12px 20px;
+    background: #fff;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: bold;
+    color: #e7e7e7;
+}
+
+/* Hover */
+.option:hover {
+    background: #e6f2ff;
+    border-color: #0c73da;
+}
+
+/* Opción activa */
+.option.active {
+    background: #004080;
+    color: #fff;
+    border-color: #004080;
+}
+
+.options {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin: 20px auto;
+    padding: 20px;
+    max-width: 600px;
+    background: #f9f9f9;
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.option {
+    flex: 1;
+    text-align: center;
+    padding: 12px 20px;
+    background: #fff;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: bold;
+    color: #06427e;
+}
+
+.option.active {
+    background: #104088;
+    color: #fff;
+}
+
+.options {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin: 20px auto;
+    padding: 20px;
+    max-width: 600px;
+    background: #f9f9f9;
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.option {
+    flex: 1;
+    text-align: center;
+    padding: 12px 20px;
+    background: #fff;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: bold;
+    color:  #004181;
+}
+
+.option.active {
+    background: #004080;
+    color: #fff;
+}
+
+.time {
+    margin: 20px auto;
+    padding: 30px;
+    max-width: 600px;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    transition: background 0.5s ease;
+}
+
+.options, .time {
+    display: none;
+}
+
+.hero {
+  text-align: center;
+  padding: 60px 20px;
+  margin: 20px auto;
+  border-radius: 10px;
+  max-width: 1000px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Colores según hora */
+.hero.mañana {
+  background: linear-gradient(to right, #87CEEB, #f0f8ff);
+  color: #e2f066;
+}
+
+.hero.tarde {
+  background: linear-gradient(to right, #a05834, #bb5e60);
+  color: #d1b25b;
+}
+
+.hero.noche {
+  background: linear-gradient(to right, #418dff, #418dff);
+  color: #010202;
+}
+
+/* Hora y mensaje */
+.hora-container {
+  margin-top: 20px;
+  padding: 15px;
+  background: #ffffff;
+  border-radius: 8px;
+  display: inline-block;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.contenedor-colegios {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.colegio-card {
+    background: rgb(224, 130, 130);
+    color: white;
+    padding: 15px 20px;
+    border-radius: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.colegio-card button {
+    background: white;
+    color: rgb(224, 130, 130);
+    border: none;
+    padding: 8px 15px;
+    border-radius: 20px;
+    cursor: pointer;
+}
+
+.filtro {
+    margin-top: 10px;
+}
+
+.formulario-inscripcion {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.bloque {
+    background: rgb(88, 83, 83);
+    color: white;
+    padding: 20px;
+    border-radius: 15px;
+}
+
+.bloque input {
+    width: 100%;
+    margin-bottom: 10px;
+    padding: 5px;
+    border: none;
+    border-bottom: 1px solid white;
+    background: transparent;
+    color: white;
+}
+
+.foto {
+    border: 2px solid black;
+    padding: 20px;
+    text-align: center;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+#mapa {
+    height: 400px;
+    width: 200%;
+    margin-top: 20px;
+    border-radius: 15px;
+}

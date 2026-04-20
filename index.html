@@ -1,261 +1,588 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
-<head>
-    <meta charset="UTF-8">
+  <head>
+    <meta charset="UTF-8" />
     <title>Plataforma Cupos Escolares</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <!-- CSS -->
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css" />
 
     <!-- Leaflet CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
-     crossorigin=""/>
-</head>
-<body>
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+      crossorigin=""
+    />
+  </head>
 
+  <body>
     <!-- HEADER -->
-    <header class="header">
-        <div class="logo">
-            <img src="logo.png" alt="Logo">
-            <span>Plataforma Cupos Escolares</span>
-        </div>
-        <nav>
-            <ul class="nav-links">
-                <li><a href="#inicio">Inicio</a></li>
-                <li><a href="#registro">Registro</a></li>
-                <li><a href="#requisitos">Requisitos</a></li>
-                <li><a href="#inscripcion">Formulario</a></li>
-                <li><a href="#login">Login</a></li>
-                <li><a href="#estado">Estado</a></li>
-            </ul>
-        </nav>
+    <header class="header" role="banner">
+      <div class="logo">
+        <img src="logo.png" alt="Logo Plataforma" />
+        <span>Plataforma Cupos Escolares</span>
+      </div>
+      <button
+        class="menu-toggle"
+        id="menuToggle"
+        aria-label="Abrir menú"
+        aria-expanded="false"
+      >
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+      <nav
+        class="nav-container"
+        id="navContainer"
+        role="navigation"
+        aria-label="Navegación principal"
+      >
+        <ul class="nav-links">
+          <li><a href="#inicio" class="auth-required">Inicio</a></li>
+          <li><a href="#registro">Registro</a></li>
+          <li><a href="#requisitos" class="auth-required">Requisitos</a></li>
+          <li><a href="#inscripcion" class="auth-required">Formulario</a></li>
+          <li><a href="#login">Login</a></li>
+          <li><a href="#estado" class="auth-required">Estado</a></li>
+          <li><a href="#dashboard" class="auth-required">Dashboard</a></li>
+          <li>
+            <button id="btnLogout" class="btn-logout auth-required">
+              Cerrar Sesión
+            </button>
+          </li>
+        </ul>
+      </nav>
     </header>
 
     <!-- HERO -->
-    <section class="hero" id="inicio">
-        <h1>Asignación Digital de Cupos Escolares</h1>
-        <p>Facilitamos el acceso transparente y rápido a la educación pública.</p>
-        <div class="hora-container">
-            <h2 id="horaActual"></h2>
-            <p id="mensajeHora"></p>
-        </div>
+    <section class="hero auth-required" id="inicio">
+      <h1>Asignación Digital de Cupos Escolares</h1>
+      <p>Facilitamos el acceso transparente y rápido a la educación pública.</p>
+      <div class="hora-container">
+        <h2 id="horaActual"></h2>
+        <p id="mensajeHora"></p>
+      </div>
     </section>
 
     <!-- REGISTRO -->
-    <section class="section" id="registro">
-        <h2>Registro</h2>
-        <form>
-            <div class="form-group">
-                <label>Nombre Completo</label>
-                <input type="text" required>
-            </div>
-            <div class="form-group">
-                <label>Email</label>
-                <input type="email" required>
-            </div>
-            <div class="form-group">
-                <label>Contraseña</label>
-                <input type="password" required>
-            </div>
-            <div class="form-group">
-                <label>Rol</label>
-                <select required>
-                    <option value="">Seleccione Rol</option>
-                    <option>Administrador</option>
-                    <option>Padre</option>
-                    <option>Institución</option>
-                </select>
-            </div>
-            <button type="submit" class="btn">Registrarse</button>
-        </form>
+    <section class="section login-only" id="registro">
+      <h2>Crear Cuenta</h2>
+      <form id="formRegistro" aria-labelledby="registro">
+        <div class="form-group">
+          <label for="nombreRegistro">Nombre Completo *</label>
+          <input
+            type="text"
+            id="nombreRegistro"
+            placeholder="Juan Pérez"
+            required
+          />
+          <span class="error-msg" id="errorNombre"></span>
+        </div>
+        <div class="form-group">
+          <label for="emailRegistro">Email *</label>
+          <input
+            type="email"
+            id="emailRegistro"
+            placeholder="correo@ejemplo.com"
+            required
+          />
+          <span class="error-msg" id="errorEmailReg"></span>
+        </div>
+        <div class="form-group">
+          <label for="passwordRegistro">Contraseña *</label>
+          <input
+            type="password"
+            id="passwordRegistro"
+            placeholder="Mínimo 6 caracteres"
+            required
+          />
+          <span class="error-msg" id="errorPassReg"></span>
+        </div>
+        <div class="form-group">
+          <label for="rolRegistro">Rol *</label>
+          <select id="rolRegistro" required>
+            <option value="">Seleccione Rol</option>
+            <option value="administrador">Administrador</option>
+            <option value="padre">Padre/Acudiente</option>
+            <option value="institucion">Institución</option>
+          </select>
+          <span class="error-msg" id="errorRol"></span>
+        </div>
+        <button type="submit" class="btn btn-primary">Registrarse</button>
+      </form>
     </section>
 
     <!-- LOGIN -->
-    <section class="section" id="login">
-        <h2>Iniciar Sesión</h2>
-        <form>
-            <div class="form-group">
-                <label>Email</label>
-                <input type="email" required>
-            </div>
-            <div class="form-group">
-                <label>Contraseña</label>
-                <input type="password" required>
-            </div>
-            <button type="submit" class="btn">Ingresar</button>
-        </form>
+    <section class="section login-only" id="login">
+      <h2>Iniciar Sesión</h2>
+      <form id="formLogin" aria-labelledby="login">
+        <div class="form-group">
+          <label for="emailLogin">Email *</label>
+          <input
+            type="email"
+            id="emailLogin"
+            placeholder="correo@ejemplo.com"
+            required
+          />
+          <span class="error-msg" id="errorEmailLogin"></span>
+        </div>
+        <div class="form-group">
+          <label for="passwordLogin">Contraseña *</label>
+          <input
+            type="password"
+            id="passwordLogin"
+            placeholder="Tu contraseña"
+            required
+          />
+          <span class="error-msg" id="errorPassLogin"></span>
+        </div>
+        <button type="submit" class="btn btn-primary">Ingresar</button>
+        <p class="form-hint">
+          ¿No tienes cuenta? <a href="#registro">Regístrate aquí</a>
+        </p>
+      </form>
     </section>
 
     <!-- BÚSQUEDA DE COLEGIOS-->
-   <section class="section" id="busqueda">
-    <h2>Cupos disponibles</h2>
-    <p>Resultados de la búsqueda de escuelas con cupos disponibles en el Valle del Cauca</p>
+    <section class="section auth-required" id="busqueda">
+      <h2>Cupos Disponibles</h2>
+      <p>Escuelas con cupos disponibles en el Valle del Cauca</p>
 
-    <div class="filtro">
-        <span>✔ Filtrar</span>
-    </div>
+      <div class="filtro-container">
+        <input
+          type="text"
+          id="buscadorColegios"
+          placeholder="🔍 Buscar por nombre o ciudad..."
+          class="buscador"
+        />
+      </div>
 
-    <div class="contenedor-colegios">
-
+      <div class="contenedor-colegios">
         <div class="colegio-card">
-            <div>
-                <h3>Institución Educativa Santa Librada</h3>
-                <p>Cali - Nivel secundaria</p>
-            </div>
-           <button class="btn inscribirse-btn" data-colegio="Institución Educativa Santa Librada">Inscribirse</button>
+          <div class="card-info">
+            <h3>Institución Educativa Santa Librada</h3>
+            <p>📍 Cali - Nivel secundaria</p>
+            <p class="cupos">📚 Cupos: 15</p>
+          </div>
+          <button
+            class="btn btn-secondary inscribirse-btn"
+            data-colegio="Institución Educativa Santa Librada"
+            aria-label="Inscribirse en Santa Librada"
+          >
+            Inscribirse
+          </button>
         </div>
 
         <div class="colegio-card">
-            <div>
-                <h3>Institución Educativa Técnico Industrial</h3>
-                <p>Cali - Nivel media técnica</p>
-            </div>
-            <button class="btn inscribirse-btn" data-colegio="Institución Educativa Técnico Industrial">Inscribirse</button>
+          <div class="card-info">
+            <h3>Institución Educativa Técnico Industrial</h3>
+            <p>📍 Cali - Nivel media técnica</p>
+            <p class="cupos">📚 Cupos: 8</p>
+          </div>
+          <button
+            class="btn btn-secondary inscribirse-btn"
+            data-colegio="Institución Educativa Técnico Industrial"
+            aria-label="Inscribirse en Técnico Industrial"
+          >
+            Inscribirse
+          </button>
         </div>
 
         <div class="colegio-card">
-            <div>
-                <h3>Institución Educativa Jorge Isaacs</h3>
-                <p>Cali - Nivel primaria</p>
-            </div>
-            <button class="btn inscribirse-btn" data-colegio="Institución Educativa Jorge Isaacs">Inscribirse</button>
+          <div class="card-info">
+            <h3>Institución Educativa Jorge Isaacs</h3>
+            <p>📍 Cali - Nivel primaria</p>
+            <p class="cupos">📚 Cupos: 20</p>
+          </div>
+          <button
+            class="btn btn-secondary inscribirse-btn"
+            data-colegio="Institución Educativa Jorge Isaacs"
+            aria-label="Inscribirse en Jorge Isaacs"
+          >
+            Inscribirse
+          </button>
         </div>
 
         <div class="colegio-card">
-            <div>
-                <h3>Institución Educativa Ciudad de Cartago</h3>
-                <p>Cartago - Nivel secundaria</p>
-            </div>
-            <button class="btn inscribirse-btn" data-colegio="Institución Educativa Ciudad de Cartago">Inscribirse</button>
+          <div class="card-info">
+            <h3>Institución Educativa Ciudad de Cartago</h3>
+            <p>📍 Cartago - Nivel secundaria</p>
+            <p class="cupos">📚 Cupos: 12</p>
+          </div>
+          <button
+            class="btn btn-secondary inscribirse-btn"
+            data-colegio="Institución Educativa Ciudad de Cartago"
+            aria-label="Inscribirse en Ciudad de Cartago"
+          >
+            Inscribirse
+          </button>
         </div>
 
         <div class="colegio-card">
-            <div>
-                <h3>Institución Educativa Tulio Enrique Tascón</h3>
-                <p>Buga - Nivel primaria</p>
-            </div>
-            <button class="btn inscribirse-btn" data-colegio="Institución Educativa Tulio Enrique Tascón">Inscribirse</button>
+          <div class="card-info">
+            <h3>Institución Educativa Tulio Enrique Tascón</h3>
+            <p>📍 Buga - Nivel primaria</p>
+            <p class="cupos">📚 Cupos: 18</p>
+          </div>
+          <button
+            class="btn btn-secondary inscribirse-btn"
+            data-colegio="Institución Educativa Tulio Enrique Tascón"
+            aria-label="Inscribirse en Tulio Enrique Tascón"
+          >
+            Inscribirse
+          </button>
         </div>
 
         <div class="colegio-card">
-            <div>
-                <h3>Institución Educativa Francisco José de Caldas</h3>
-                <p>Palmira - Nivel secundaria</p>
-            </div>
-            <button class="btn inscribirse-btn" data-colegio="Institución Educativa Francisco José de Caldas">Inscribirse</button>
+          <div class="card-info">
+            <h3>Institución Educativa Francisco José de Caldas</h3>
+            <p>📍 Palmira - Nivel secundaria</p>
+            <p class="cupos">📚 Cupos: 10</p>
+          </div>
+          <button
+            class="btn btn-secondary inscribirse-btn"
+            data-colegio="Institución Educativa Francisco José de Caldas"
+            aria-label="Inscribirse en Francisco José de Caldas"
+          >
+            Inscribirse
+          </button>
         </div>
-        <div id="mapa"></div>
-    </div>
-</section>
+      </div>
+
+      <div class="mapa-seccion">
+        <h3>Ubicación de Instituciones</h3>
+        <div
+          id="mapa"
+          role="region"
+          aria-label="Mapa de ubicación de colegios"
+        ></div>
+      </div>
+    </section>
 
     <!-- REQUISITOS -->
-    <section class="section" id="requisitos">
-        <h2>Requisitos</h2>
-        <ul>
-            <li>Documento de identidad del estudiante</li>
-            <li>Documento del acudiente</li>
-            <li>Certificado de estudios anterior</li>
-            <li>Comprobante de residencia</li>
-            <li>Foto del estudiante</li>
-        </ul>
+    <section class="section auth-required" id="requisitos">
+      <h2>Requisitos para Inscripción</h2>
+      <div class="requisitos-lista">
+        <div class="requisito-item">
+          <span class="requisito-icon">📋</span>
+          <div>
+            <h4>Documento de Identidad</h4>
+            <p>
+              Cédula de ciudadanía o tarjeta de identidad del estudiante
+              escaneada
+            </p>
+          </div>
+        </div>
+        <div class="requisito-item">
+          <span class="requisito-icon">👤</span>
+          <div>
+            <h4>Documento del Acudiente</h4>
+            <p>Cédula de ciudadanía del padre/madre o acudiente escaneada</p>
+          </div>
+        </div>
+        <div class="requisito-item">
+          <span class="requisito-icon">📚</span>
+          <div>
+            <h4>Certificado de Estudios</h4>
+            <p>Certificado de calificaciones del año anterior</p>
+          </div>
+        </div>
+        <div class="requisito-item">
+          <span class="requisito-icon">🏠</span>
+          <div>
+            <h4>Comprobante de Residencia</h4>
+            <p>
+              Factura de servicios públicos (agua, luz) a nombre de la familia
+            </p>
+          </div>
+        </div>
+        <div class="requisito-item">
+          <span class="requisito-icon">📸</span>
+          <div>
+            <h4>Foto del Estudiante</h4>
+            <p>Foto digital 3x4 con fondo blanco en formato JPG o PNG</p>
+          </div>
+        </div>
+        <div class="requisito-item">
+          <span class="requisito-icon">💉</span>
+          <div>
+            <h4>Carné de Vacunación</h4>
+            <p>Comprobante de vacunación actualizado</p>
+          </div>
+        </div>
+      </div>
     </section>
 
     <!-- INSCRIPCIÓN -->
-  <section class="section" id="inscripcion">
-    <h2>Formulario de inscripción</h2>
+    <section class="section auth-required" id="inscripcion">
+      <h2>Formulario de Inscripción</h2>
 
-    <div class="formulario-inscripcion">
-    <div class="bloque">
-    <p>Colegio seleccionado:</p>
-    <input type="text" id="colegioSeleccionado" readonly>
+      <form id="formInscripcion" class="formulario-inscripcion">
+        <!-- COLEGIO SELECCIONADO -->
+        <div class="bloque">
+          <h3>Información del Colegio</h3>
+          <div class="form-group">
+            <label for="colegioSeleccionado">Colegio Seleccionado *</label>
+            <input type="text" id="colegioSeleccionado" readonly required />
+            <span class="error-msg" id="errorColegio"></span>
+          </div>
+        </div>
 
         <!-- DATOS DEL ESTUDIANTE -->
         <div class="bloque">
-            <p>Nombre y apellido del estudiante:</p>
-            <input type="text" id="nombreEstudiante">
+          <h3>Datos del Estudiante</h3>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="nombreEstudiante">Nombre y Apellido *</label>
+              <input
+                type="text"
+                id="nombreEstudiante"
+                placeholder="Juan Carlos Pérez"
+                required
+              />
+              <span class="error-msg"></span>
+            </div>
+            <div class="form-group">
+              <label for="cedulaEstudiante">Cédula *</label>
+              <input
+                type="text"
+                id="cedulaEstudiante"
+                placeholder="1234567890"
+                required
+              />
+              <span class="error-msg"></span>
+            </div>
+          </div>
 
-            <p>Fecha de nacimiento:</p>
-            <input type="date">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="fechaNacimiento">Fecha de Nacimiento *</label>
+              <input type="date" id="fechaNacimiento" required />
+              <span class="error-msg"></span>
+            </div>
+            <div class="form-group">
+              <label for="genero">Género *</label>
+              <select id="genero" required>
+                <option value="">Seleccione</option>
+                <option value="masculino">Masculino</option>
+                <option value="femenino">Femenino</option>
+                <option value="otro">Otro</option>
+              </select>
+              <span class="error-msg"></span>
+            </div>
+          </div>
 
-            <p>Lugar de nacimiento:</p>
-            <input type="text">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="lugarNacimiento">Lugar de Nacimiento *</label>
+              <input
+                type="text"
+                id="lugarNacimiento"
+                placeholder="Cali"
+                required
+              />
+              <span class="error-msg"></span>
+            </div>
+            <div class="form-group">
+              <label for="grado">Grado a Cursar *</label>
+              <select id="grado" required>
+                <option value="">Seleccione</option>
+                <option value="preescolar">Preescolar</option>
+                <option value="primero">Primero</option>
+                <option value="segundo">Segundo</option>
+                <option value="tercero">Tercero</option>
+                <option value="cuarto">Cuarto</option>
+                <option value="quinto">Quinto</option>
+                <option value="sexto">Sexto</option>
+                <option value="septimo">Séptimo</option>
+                <option value="octavo">Octavo</option>
+                <option value="noveno">Noveno</option>
+                <option value="decimo">Décimo</option>
+                <option value="once">Once</option>
+              </select>
+              <span class="error-msg"></span>
+            </div>
+          </div>
 
-            <p>Grado:</p>
-            <input type="text">
-
-            <p>Género:</p>
-            <input type="text">
-
-            <p>Correo electrónico:</p>
-            <input type="email" id="emailEstudiante">
-        </div>
-
-        <!-- FOTO -->
-        <div class="foto">
-            <p>Foto</p>
-            <input type="file">
+          <div class="form-group">
+            <label for="emailEstudiante">Correo Electrónico *</label>
+            <input
+              type="email"
+              id="emailEstudiante"
+              placeholder="estudiante@ejemplo.com"
+              required
+            />
+            <span class="error-msg"></span>
+          </div>
         </div>
 
         <!-- DATOS DEL ACUDIENTE -->
         <div class="bloque">
-            <p>Nombre y apellido del acudiente:</p>
-            <input type="text">
+          <h3>Datos del Acudiente/Padre</h3>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="nombreAcudiente">Nombre y Apellido *</label>
+              <input
+                type="text"
+                id="nombreAcudiente"
+                placeholder="María García López"
+                required
+              />
+              <span class="error-msg"></span>
+            </div>
+            <div class="form-group">
+              <label for="cedulaAcudiente">Cédula *</label>
+              <input
+                type="text"
+                id="cedulaAcudiente"
+                placeholder="9876543210"
+                required
+              />
+              <span class="error-msg"></span>
+            </div>
+          </div>
 
-            <p>Teléfono:</p>
-            <input type="text">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="telefonoAcudiente">Teléfono *</label>
+              <input
+                type="tel"
+                id="telefonoAcudiente"
+                placeholder="3001234567"
+                required
+              />
+              <span class="error-msg"></span>
+            </div>
+            <div class="form-group">
+              <label for="emailAcudiente">Email *</label>
+              <input
+                type="email"
+                id="emailAcudiente"
+                placeholder="acudiente@ejemplo.com"
+                required
+              />
+              <span class="error-msg"></span>
+            </div>
+          </div>
 
-            <p>Dirección:</p>
-            <input type="text">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="direccion">Dirección *</label>
+              <input
+                type="text"
+                id="direccion"
+                placeholder="Calle 10 #20-30"
+                required
+              />
+              <span class="error-msg"></span>
+            </div>
+            <div class="form-group">
+              <label for="ciudad">Ciudad *</label>
+              <input type="text" id="ciudad" placeholder="Cali" required />
+              <span class="error-msg"></span>
+            </div>
+          </div>
 
-            <p>Ciudad:</p>
-            <input type="text">
-
-            <p>País:</p>
-            <input type="text">
+          <div class="form-group">
+            <label for="pais">País *</label>
+            <input type="text" id="pais" placeholder="Colombia" required />
+            <span class="error-msg"></span>
+          </div>
         </div>
 
-        <button type="button" class="btn">Enviar inscripción</button>
+        <!-- FOTO -->
+        <div class="bloque">
+          <h3>Foto del Estudiante</h3>
+          <div class="file-input-wrapper">
+            <input type="file" id="fotoEstudiante" accept="image/*" required />
+            <label for="fotoEstudiante" class="file-label">
+              <span>📸 Seleccionar foto (JPG, PNG)</span>
+            </label>
+            <span id="fotoNombre" class="file-name"></span>
+          </div>
+        </div>
 
-    </div>
-</section>
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary">
+            Enviar Inscripción
+          </button>
+          <button type="reset" class="btn btn-secondary">
+            Limpiar Formulario
+          </button>
+        </div>
+      </form>
+    </section>
 
     <!-- ESTADO -->
-    <section class="section" id="estado">
-        <h2>Consultar Estado</h2>
-        <form>
-            <div class="form-group">
-                <label>Correo registrado</label>
-                <input type="email" id="correoConsulta">
-            </div>
-            <button type="submit" class="btn">Consultar</button>
-        </form>
-        <div id="resultadoEstado"></div>
+    <section class="section auth-required" id="estado">
+      <h2>Consultar Estado de Solicitud</h2>
+      <form id="formConsultaEstado" aria-labelledby="estado">
+        <div class="form-group">
+          <label for="correoConsulta">Email Registrado *</label>
+          <input
+            type="email"
+            id="correoConsulta"
+            placeholder="tu@email.com"
+            required
+          />
+          <span class="error-msg" id="errorCorreoConsulta"></span>
+        </div>
+        <button type="submit" class="btn btn-primary">Consultar Estado</button>
+      </form>
+      <div
+        id="resultadoEstado"
+        class="resultado-container"
+        role="region"
+        aria-live="polite"
+        aria-label="Resultados de consulta"
+      ></div>
     </section>
 
     <!-- DASHBOARD -->
-    <section class="section" id="dashboard">
-        <h2>Panel de Usuario</h2>
+    <section class="section auth-required" id="dashboard">
+      <h2>Panel de Usuario</h2>
+      <div class="dashboard-grid">
         <div class="card">
-            <h3>Mis Solicitudes</h3>
-            <p>No hay solicitudes registradas.</p>
+          <h3>📋 Mis Solicitudes</h3>
+          <div id="misSolicitudes">
+            <p>
+              No hay solicitudes registradas.
+              <a href="#inscripcion">Crear una nueva</a>
+            </p>
+          </div>
         </div>
         <div class="card">
-            <h3>Notificaciones</h3>
+          <h3>🔔 Notificaciones</h3>
+          <div id="notificaciones">
             <p>No tienes notificaciones nuevas.</p>
+          </div>
         </div>
+        <div class="card">
+          <h3>📊 Estadísticas</h3>
+          <div class="stats">
+            <p>Solicitudes Totales: <strong id="totalSolicitudes">0</strong></p>
+            <p>Pendientes: <strong id="solicitudesPendientes">0</strong></p>
+            <p>Aprobadas: <strong id="solicitudesAprobadas">0</strong></p>
+          </div>
+        </div>
+      </div>
     </section>
 
     <!-- FOOTER -->
     <footer class="footer">
-        © 2026 Plataforma Digital de Cupos Escolares - Proyecto Ingeniería de Sistemas
+      © 2026 Plataforma Digital de Cupos Escolares - Proyecto Ingeniería de
+      Sistemas
     </footer>
 
     <!-- Leaflet JS -->
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
-     crossorigin=""></script>
+    <script
+      src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+      integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+      crossorigin=""
+    ></script>
 
     <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -263,5 +590,5 @@
     <!-- Scripts propios -->
     <script src="script.js"></script>
     <script src="animacion.js"></script>
-</body>
+  </body>
 </html>

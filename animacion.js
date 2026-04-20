@@ -1,238 +1,971 @@
+/* ==================== SISTEMA DE AUTENTICACIÓN ==================== */
+
+// Nota: actualizarVisiblidad() está definida en script.js
+
+/* ==================== UTILIDADES ==================== */
+
+// Sistema de notificaciones Toast
+function mostrarToast(mensaje, tipo = "success", duracion = 3000) {
+  const toast = document.createElement("div");
+  toast.className = `toast ${tipo}`;
+  toast.textContent = mensaje;
+  document.body.appendChild(toast);
+
+  setTimeout(() => {
+    toast.style.animation = "slideInRight 0.4s ease";
+  }, 10);
+
+  setTimeout(() => {
+    toast.remove();
+  }, duracion);
+}
+
+// Validar email
+function validarEmail(email) {
+  const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return regex.test(email);
+}
+
+// Validar teléfono
+function validarTelefono(telefono) {
+  const regex = /^\d{7,}$/;
+  return regex.test(telefono.replace(/\D/g, ""));
+}
+
+// Validar contraseña
+function validarPassword(password) {
+  return password.length >= 6;
+}
+
+/* ==================== UN ÚNICO DOMCONTENTLOADED ==================== */
+
+document.addEventListener("DOMContentLoaded", function () {
+  // ===== MENÚ HAMBURGUESA =====
+  const menuToggle = document.getElementById("menuToggle");
+  const navContainer = document.getElementById("navContainer");
+
+  if (menuToggle && navContainer) {
+    menuToggle.addEventListener("click", function () {
+      menuToggle.classList.toggle("active");
+      navContainer.classList.toggle("active");
+    });
+
+    document.querySelectorAll(".nav-links a").forEach((link) => {
+      link.addEventListener("click", function () {
+        menuToggle.classList.remove("active");
+        navContainer.classList.remove("active");
+      });
+    });
+  }
+
+  // ===== BÚSQUEDA DE COLEGIOS =====
+  const buscador = document.getElementById("buscadorColegios");
+  if (buscador) {
+    buscador.addEventListener("input", function (e) {
+      const termino = e.target.value.toLowerCase();
+      const tarjetas = document.querySelectorAll(".colegio-card");
+
+      tarjetas.forEach((tarjeta) => {
+        const texto = tarjeta.textContent.toLowerCase();
+        if (texto.includes(termino)) {
+          tarjeta.style.display = "flex";
+        } else {
+          tarjeta.style.display = "none";
+        }
+      });
+    });
+  }
+
+  // ===== INSCRIPCIÓN DESDE BOTONES =====
+  const botones = document.querySelectorAll(".inscribirse-btn");
+  botones.forEach((boton) => {
+    boton.addEventListener("click", function () {
+      const colegio = this.getAttribute("data-colegio");
+      localStorage.setItem("colegioSeleccionado", colegio);
+
+      const campoColegio = document.getElementById("colegioSeleccionado");
+      if (campoColegio) {
+        campoColegio.value = colegio;
+      }
+
+      document.getElementById("inscripcion").scrollIntoView({
+        behavior: "smooth",
+      });
+      mostrarToast("Colegio seleccionado: " + colegio, "success");
+    });
+  });
+
+  // Llenar campo si hay colegio guardado
+  const campoColegio = document.getElementById("colegioSeleccionado");
+  if (campoColegio) {
+    const colegioGuardado = localStorage.getItem("colegioSeleccionado");
+    if (colegioGuardado) {
+      campoColegio.value = colegioGuardado;
+    }
+  }
+
+  // ===== CAMBIAR FOTO =====
+  const inputFoto = document.getElementById("fotoEstudiante");
+  const nombreFoto = document.getElementById("fotoNombre");
+
+  if (inputFoto && nombreFoto) {
+    inputFoto.addEventListener("change", function (e) {
+      if (e.target.files.length > 0) {
+        nombreFoto.textContent = "✓ Archivo: " + e.target.files[0].name;
+      } else {
+        nombreFoto.textContent = "";
+      }
+    });
+  }
+
+  // ===== FORMULARIO DE REGISTRO =====
+  const formRegistro = document.getElementById("formRegistro");
+  if (formRegistro) {
+    formRegistro.addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      const nombre = document.getElementById("nombreRegistro").value.trim();
+      const email = document.getElementById("emailRegistro").value.trim();
+      const password = document.getElementById("passwordRegistro").value;
+      const rol = document.getElementById("rolRegistro").value;
+
+      let valido = true;
+
+      if (!nombre || nombre.length < 3) {
+        document.getElementById("errorNombre").textContent =
+          "El nombre debe tener al menos 3 caracteres";
+        valido = false;
+      } else {
+        document.getElementById("errorNombre").textContent = "";
+      }
+
+      if (!validarEmail(email)) {
+        document.getElementById("errorEmailReg").textContent = "Email inválido";
+        valido = false;
+      } else {
+        document.getElementById("errorEmailReg").textContent = "";
+      }
+
+      if (!validarPassword(password)) {
+        document.getElementById("errorPassReg").textContent =
+          "La contraseña debe tener al menos 6 caracteres";
+        valido = false;
+      } else {
+        document.getElementById("errorPassReg").textContent = "";
+      }
+
+      if (!rol) {
+        document.getElementById("errorRol").textContent = "Selecciona un rol";
+        valido = false;
+      } else {
+        document.getElementById("errorRol").textContent = "";
+      }
+
+      if (valido) {
+        let registros = JSON.parse(localStorage.getItem("registros")) || [];
+        registros.push({
+          nombre: nombre,
+          email: email,
+          password: password,
+          rol: rol,
+          fecha: new Date().toLocaleDateString(),
+        });
+        localStorage.setItem("registros", JSON.stringify(registros));
+
+        mostrarToast("Registro exitoso ✅", "success");
+        formRegistro.reset();
+
+        setTimeout(() => {
+          window.location.hash = "#login";
+        }, 1500);
+      }
+    });
+  }
+
+  // ===== FORMULARIO DE LOGIN =====
+  const formLogin = document.getElementById("formLogin");
+  if (formLogin) {
+    formLogin.addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      const email = document.getElementById("emailLogin").value.trim();
+      const password = document.getElementById("passwordLogin").value;
+
+      let valido = true;
+
+      if (!validarEmail(email)) {
+        document.getElementById("errorEmailLogin").textContent =
+          "Email inválido";
+        valido = false;
+      } else {
+        document.getElementById("errorEmailLogin").textContent = "";
+      }
+
+      if (!password) {
+        document.getElementById("errorPassLogin").textContent =
+          "Ingresa tu contraseña";
+        valido = false;
+      } else {
+        document.getElementById("errorPassLogin").textContent = "";
+      }
+
+      if (valido) {
+        let registros = JSON.parse(localStorage.getItem("registros")) || [];
+
+        let usuarioValido = registros.find(
+          (r) => r.email === email && r.password === password,
+        );
+
+        if (usuarioValido) {
+          localStorage.setItem("usuarioActivo", JSON.stringify(usuarioValido));
+
+          actualizarVisiblidad(); // Mostrar elementos protegidos
+          mostrarToast("Ingreso exitoso ✅", "success");
+          formLogin.reset();
+          setTimeout(() => {
+            document
+              .getElementById("dashboard")
+              .scrollIntoView({ behavior: "smooth" });
+          }, 500);
+        } else {
+          mostrarToast("Email o contraseña incorrectos ❌", "error");
+        }
+      }
+    });
+  } else {
+    console.error("❌ formLogin NO encontrado!");
+  }
+
+  // ===== FORMULARIO DE INSCRIPCIÓN =====
+  const formInscripcion = document.getElementById("formInscripcion");
+  if (formInscripcion) {
+    formInscripcion.addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      const colegio = document
+        .getElementById("colegioSeleccionado")
+        .value.trim();
+      const nombreEst = document
+        .getElementById("nombreEstudiante")
+        .value.trim();
+      const cedulaEst = document
+        .getElementById("cedulaEstudiante")
+        .value.trim();
+      const fechaNac = document.getElementById("fechaNacimiento").value;
+      const lugarNac = document.getElementById("lugarNacimiento").value.trim();
+      const grado = document.getElementById("grado").value;
+      const genero = document.getElementById("genero").value;
+      const emailEst = document.getElementById("emailEstudiante").value.trim();
+
+      const nombreAcud = document
+        .getElementById("nombreAcudiente")
+        .value.trim();
+      const cedulaAcud = document
+        .getElementById("cedulaAcudiente")
+        .value.trim();
+      const telefonoAcud = document
+        .getElementById("telefonoAcudiente")
+        .value.trim();
+      const emailAcud = document.getElementById("emailAcudiente").value.trim();
+      const direccion = document.getElementById("direccion").value.trim();
+      const ciudad = document.getElementById("ciudad").value.trim();
+      const pais = document.getElementById("pais").value.trim();
+
+      let valido = true;
+
+      if (!colegio) {
+        mostrarToast("Selecciona un colegio", "error");
+        valido = false;
+      }
+
+      if (!nombreEst || nombreEst.length < 3) {
+        mostrarToast("Nombre del estudiante inválido", "error");
+        valido = false;
+      }
+
+      if (!cedulaEst || cedulaEst.length < 8) {
+        mostrarToast("Cédula del estudiante inválida", "error");
+        valido = false;
+      }
+
+      if (!fechaNac) {
+        mostrarToast("Fecha de nacimiento requerida", "error");
+        valido = false;
+      }
+
+      if (!validarEmail(emailEst)) {
+        mostrarToast("Email del estudiante inválido", "error");
+        valido = false;
+      }
+
+      if (!nombreAcud || nombreAcud.length < 3) {
+        mostrarToast("Nombre del acudiente inválido", "error");
+        valido = false;
+      }
+
+      if (!validarTelefono(telefonoAcud)) {
+        mostrarToast("Teléfono inválido", "error");
+        valido = false;
+      }
+
+      if (!validarEmail(emailAcud)) {
+        mostrarToast("Email del acudiente inválido", "error");
+        valido = false;
+      }
+
+      if (valido) {
+        let solicitudes = JSON.parse(localStorage.getItem("solicitudes")) || [];
+
+        solicitudes.push({
+          id: Date.now(),
+          colegio: colegio,
+          estudiante: {
+            nombre: nombreEst,
+            cedula: cedulaEst,
+            fechaNacimiento: fechaNac,
+            lugarNacimiento: lugarNac,
+            grado: grado,
+            genero: genero,
+            email: emailEst,
+          },
+          acudiente: {
+            nombre: nombreAcud,
+            cedula: cedulaAcud,
+            telefono: telefonoAcud,
+            email: emailAcud,
+            direccion: direccion,
+            ciudad: ciudad,
+            pais: pais,
+          },
+          estado: "Pendiente",
+          fecha: new Date().toLocaleDateString(),
+          hora: new Date().toLocaleTimeString(),
+        });
+
+        localStorage.setItem("solicitudes", JSON.stringify(solicitudes));
+
+        mostrarToast("Inscripción registrada correctamente ✅", "success");
+        formInscripcion.reset();
+
+        actualizarDashboard();
+      }
+    });
+  }
+
+  // ===== CONSULTAR ESTADO =====
+  const formConsultaEstado = document.getElementById("formConsultaEstado");
+  if (formConsultaEstado) {
+    formConsultaEstado.addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      const correo = document.getElementById("correoConsulta").value.trim();
+      const resultadoDiv = document.getElementById("resultadoEstado");
+
+      if (!validarEmail(correo)) {
+        mostrarToast("Email inválido", "error");
+        return;
+      }
+
+      let solicitudes = JSON.parse(localStorage.getItem("solicitudes")) || [];
+      let encontrados = solicitudes.filter(
+        (s) => s.estudiante.email === correo || s.acudiente.email === correo,
+      );
+
+      resultadoDiv.innerHTML = "";
+
+      if (encontrados.length > 0) {
+        encontrados.forEach((s) => {
+          resultadoDiv.innerHTML += `
+                      <div class="card">
+                          <h3>Solicitud de Inscripción</h3>
+                          <p><strong>Estudiante:</strong> ${s.estudiante.nombre}</p>
+                          <p><strong>Colegio:</strong> ${s.colegio}</p>
+                          <p><strong>Grado:</strong> ${s.estudiante.grado}</p>
+                          <p><strong>Estado:</strong> <span style="color: #0252a1; font-weight: bold;">${s.estado}</span></p>
+                          <p><strong>Fecha de Solicitud:</strong> ${s.fecha} a las ${s.hora}</p>
+                      </div>
+                  `;
+        });
+        mostrarToast("Solicitudes encontradas", "success");
+      } else {
+        resultadoDiv.innerHTML =
+          '<div class="card"><p>No se encontraron solicitudes con ese email ❌</p></div>';
+        mostrarToast("No hay solicitudes", "warning");
+      }
+    });
+  }
+
+  // ===== ACTUALIZAR DASHBOARD AL CARGAR =====
+  actualizarDashboard();
+
+  // ===== MENSAJE DE BIENVENIDA =====
+  const usuarioActivo = JSON.parse(localStorage.getItem("usuarioActivo"));
+  if (usuarioActivo) {
+    mostrarToast("¡Bienvenido " + usuarioActivo.nombre + "!", "success", 2000);
+  }
+});
+
+/* ==================== RELOJ Y HORA ==================== */
+
 function actualizarHora() {
   const ahora = new Date();
   const horas = ahora.getHours();
   const minutos = ahora.getMinutes();
   const segundos = ahora.getSeconds();
 
-  // Texto de la hora en formato HH:MM:SS
   const horaTexto =
-    horas.toString().padStart(2,'0') + ":" +
-    minutos.toString().padStart(2,'0') + ":" +
-    segundos.toString().padStart(2,'0');
+    horas.toString().padStart(2, "0") +
+    ":" +
+    minutos.toString().padStart(2, "0") +
+    ":" +
+    segundos.toString().padStart(2, "0");
 
-  document.getElementById("horaActual").innerText =
-    "Hora actual: " + horaTexto;
+  const horaActualEl = document.getElementById("horaActual");
+  if (horaActualEl) {
+    horaActualEl.innerText = "Hora actual: " + horaTexto;
+  }
 
   const hero = document.querySelector(".hero");
   const mensaje = document.getElementById("mensajeHora");
 
-  // Limpiar clases previas
-  hero.classList.remove("mañana","tarde","noche");
+  if (hero && mensaje) {
+    hero.classList.remove("mañana", "tarde", "noche");
 
-  // Cambiar estilo y mensaje según hora militar
-  if (horas >= 6 && horas < 12) {
-    hero.classList.add("mañana");
-    mensaje.innerText = "Buenos días ☀️";
-  } else if (horas >= 12 && horas < 18) {
-    hero.classList.add("tarde");
-    mensaje.innerText = "Buenas tardes 🌤️";
-  } else {
-    hero.classList.add("noche");
-    mensaje.innerText = "Buenas noches 🌙";
+    if (horas >= 6 && horas < 12) {
+      hero.classList.add("mañana");
+      mensaje.innerText = "Buenos días ☀️";
+    } else if (horas >= 12 && horas < 18) {
+      hero.classList.add("tarde");
+      mensaje.innerText = "Buenas tardes 🌤️";
+    } else {
+      hero.classList.add("noche");
+      mensaje.innerText = "Buenas noches 🌙";
+    }
   }
 }
 
-// Actualizar cada segundo
 setInterval(actualizarHora, 1000);
 actualizarHora();
 
-document.addEventListener("DOMContentLoaded", function () {
+/* ==================== MAPA LEAFLET ==================== */
 
-    const botones = document.querySelectorAll(".inscribirse-btn");
+if (typeof L !== "undefined" && document.getElementById("mapa")) {
+  const mapa = L.map("mapa").setView([3.4516, -76.532], 8);
 
-    botones.forEach(boton => {
-        boton.addEventListener("click", function () {
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    attribution: "© OpenStreetMap contributors",
+  }).addTo(mapa);
 
-            const colegio = this.getAttribute("data-colegio");
-
-            // Guardar en localStorage
-            localStorage.setItem("colegioSeleccionado", colegio);
-
-            // Redirigir al formulario
-            window.location.href = "#inscripcion";
-        });
-    });
-
-    // Cuando cargue la página, llenar el campo
-    const campoColegio = document.getElementById("colegioSeleccionado");
-
-    if (campoColegio) {
-        const colegioGuardado = localStorage.getItem("colegioSeleccionado");
-        if (colegioGuardado) {
-            campoColegio.value = colegioGuardado;
-        }
-    }
-
-});
-
-// Inicializar mapa en el Valle del Cauca
-var mapa = L.map('mapa').setView([3.4516, -76.5320], 8); // Cali como centro
-
-// Cargar mapa base
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '&copy; OpenStreetMap'
-}).addTo(mapa);
-
-// Lista de colegios del Valle del Cauca
-const colegios = [
+  const colegios = [
     {
-        nombre: "Institución Educativa Santa Librada",
-        ciudad: "Cali",
-        coords: [3.4516, -76.5320]
+      nombre: "Institución Educativa Santa Librada",
+      ciudad: "Cali",
+      coords: [3.4516, -76.532],
     },
     {
-        nombre: "Institución Educativa Técnico Industrial",
-        ciudad: "Cali",
-        coords: [3.4372, -76.5225]
+      nombre: "Institución Educativa Técnico Industrial",
+      ciudad: "Cali",
+      coords: [3.4372, -76.5225],
     },
     {
-        nombre: "Institución Educativa Jorge Isaacs",
-        ciudad: "Cali",
-        coords: [3.4600, -76.5000]
+      nombre: "Institución Educativa Jorge Isaacs",
+      ciudad: "Cali",
+      coords: [3.46, -76.5],
     },
     {
-        nombre: "Institución Educativa Ciudad de Cartago",
-        ciudad: "Cartago",
-        coords: [4.7464, -75.9117]
+      nombre: "Institución Educativa Ciudad de Cartago",
+      ciudad: "Cartago",
+      coords: [4.7464, -75.9117],
     },
     {
-        nombre: "Institución Educativa Tulio Enrique Tascón",
-        ciudad: "Buga",
-        coords: [3.9000, -76.3000]
+      nombre: "Institución Educativa Tulio Enrique Tascón",
+      ciudad: "Buga",
+      coords: [3.9, -76.3],
     },
     {
-        nombre: "Institución Educativa Francisco José de Caldas",
-        ciudad: "Palmira",
-        coords: [3.5394, -76.3036]
-    }
-];
+      nombre: "Institución Educativa Francisco José de Caldas",
+      ciudad: "Palmira",
+      coords: [3.5394, -76.3036],
+    },
+  ];
 
-// Crear marcadores
-colegios.forEach(colegio => {
-
-    let marcador = L.marker(colegio.coords).addTo(mapa);
-
+  colegios.forEach((colegio) => {
+    const marcador = L.marker(colegio.coords).addTo(mapa);
     marcador.bindPopup(`
-        <b>${colegio.nombre}</b><br>
-        ${colegio.ciudad}<br><br>
-        <button onclick="inscribirseDesdeMapa('${colegio.nombre}')">
-            Inscribirse
-        </button>
-    `);
-});
-
-// Función para enviar al formulario
-function inscribirseDesdeMapa(nombreColegio) {
-    localStorage.setItem("colegioSeleccionado", nombreColegio);
-    window.location.href = "#inscripcion";
+            <b>${colegio.nombre}</b><br>
+            ${colegio.ciudad}<br><br>
+            <button onclick="inscribirseDesdeMapa('${colegio.nombre}')" style="
+                padding: 8px 12px;
+                background: #0252a1;
+                color: white;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+                width: 100%;
+            ">
+                Inscribirse
+            </button>
+        `);
+  });
 }
 
-// REGISTRO
-document.querySelector("#registro form").addEventListener("submit", function(e){
-    e.preventDefault();
+function inscribirseDesdeMapa(nombreColegio) {
+  localStorage.setItem("colegioSeleccionado", nombreColegio);
+  const campoColegio = document.getElementById("colegioSeleccionado");
+  if (campoColegio) {
+    campoColegio.value = nombreColegio;
+  }
+  document.getElementById("inscripcion").scrollIntoView({ behavior: "smooth" });
+  mostrarToast("Colegio: " + nombreColegio, "success");
+}
 
-    const inputs = this.querySelectorAll("input");
-    let valido = true;
+/* ==================== ACTUALIZAR DASHBOARD ==================== */
 
-    inputs.forEach(input => {
-        if(input.value.trim() === ""){
-            valido = false;
-        }
-    });
+function actualizarDashboard() {
+  let solicitudes = JSON.parse(localStorage.getItem("solicitudes")) || [];
+  let usuarioActivo = JSON.parse(localStorage.getItem("usuarioActivo"));
 
-    if(valido){
-        alert("Registro exitoso ✅");
-    } else {
-        alert("Complete todos los campos ❌");
+  const misSolicitudes = document.getElementById("misSolicitudes");
+  if (misSolicitudes && usuarioActivo) {
+    const misSolicitudesFiltr = solicitudes.filter(
+      (s) => s.acudiente.email === usuarioActivo.email,
+    );
+
+    if (misSolicitudesFiltr.length > 0) {
+      misSolicitudes.innerHTML = "";
+      misSolicitudesFiltr.forEach((s) => {
+        misSolicitudes.innerHTML += `
+                    <p>📚 <strong>${s.colegio}</strong> - ${s.estado}</p>
+                `;
+      });
     }
-});
+  }
 
+  const totalEl = document.getElementById("totalSolicitudes");
+  const pendientesEl = document.getElementById("solicitudesPendientes");
+  const aprobadasEl = document.getElementById("solicitudesAprobadas");
 
-// LOGIN
-document.querySelector("#login form").addEventListener("submit", function(e){
-    e.preventDefault();
+  if (totalEl) totalEl.textContent = solicitudes.length;
+  if (pendientesEl)
+    pendientesEl.textContent = solicitudes.filter(
+      (s) => s.estado === "Pendiente",
+    ).length;
+  if (aprobadasEl)
+    aprobadasEl.textContent = solicitudes.filter(
+      (s) => s.estado === "Aprobada",
+    ).length;
+}
 
-    const email = this.querySelector("input[type='email']").value;
-    const pass = this.querySelector("input[type='password']").value;
+/* ==================== MAPA LEAFLET ==================== */
 
-    if(email && pass){
-        alert("Ingreso exitoso ✅");
-    } else {
-        alert("Datos incorrectos ❌");
-    }
-});
+if (typeof L !== "undefined" && document.getElementById("mapa")) {
+  const mapa = L.map("mapa").setView([3.4516, -76.532], 8);
 
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    attribution: "© OpenStreetMap contributors",
+  }).addTo(mapa);
 
-// BOTONES INSCRIBIRSE
-document.querySelectorAll(".inscribirse-btn").forEach(btn => {
-    btn.addEventListener("click", function(){
-        const colegio = this.getAttribute("data-colegio");
+  const colegios = [
+    {
+      nombre: "Institución Educativa Santa Librada",
+      ciudad: "Cali",
+      coords: [3.4516, -76.532],
+    },
+    {
+      nombre: "Institución Educativa Técnico Industrial",
+      ciudad: "Cali",
+      coords: [3.4372, -76.5225],
+    },
+    {
+      nombre: "Institución Educativa Jorge Isaacs",
+      ciudad: "Cali",
+      coords: [3.46, -76.5],
+    },
+    {
+      nombre: "Institución Educativa Ciudad de Cartago",
+      ciudad: "Cartago",
+      coords: [4.7464, -75.9117],
+    },
+    {
+      nombre: "Institución Educativa Tulio Enrique Tascón",
+      ciudad: "Buga",
+      coords: [3.9, -76.3],
+    },
+    {
+      nombre: "Institución Educativa Francisco José de Caldas",
+      ciudad: "Palmira",
+      coords: [3.5394, -76.3036],
+    },
+  ];
 
-        document.getElementById("colegioSeleccionado").value = colegio;
+  colegios.forEach((colegio) => {
+    const marcador = L.marker(colegio.coords).addTo(mapa);
+    marcador.bindPopup(`
+            <b>${colegio.nombre}</b><br>
+            ${colegio.ciudad}<br><br>
+            <button onclick="inscribirseDesdeMapa('${colegio.nombre}')" style="
+                padding: 8px 12px;
+                background: #0252a1;
+                color: white;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+                width: 100%;
+            ">
+                Inscribirse
+            </button>
+        `);
+  });
+}
 
-        // Baja automático al formulario
-        document.getElementById("inscripcion").scrollIntoView({
-            behavior: "smooth"
+function inscribirseDesdeMapa(nombreColegio) {
+  localStorage.setItem("colegioSeleccionado", nombreColegio);
+  const campoColegio = document.getElementById("colegioSeleccionado");
+  if (campoColegio) {
+    campoColegio.value = nombreColegio;
+  }
+  document.getElementById("inscripcion").scrollIntoView({ behavior: "smooth" });
+  mostrarToast("Colegio: " + nombreColegio, "success");
+}
+
+/* ==================== FORMULARIO DE REGISTRO ==================== */
+
+document.addEventListener("DOMContentLoaded", function () {
+  const formRegistro = document.getElementById("formRegistro");
+  if (formRegistro) {
+    formRegistro.addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      const nombre = document.getElementById("nombreRegistro").value.trim();
+      const email = document.getElementById("emailRegistro").value.trim();
+      const password = document.getElementById("passwordRegistro").value;
+      const rol = document.getElementById("rolRegistro").value;
+
+      let valido = true;
+
+      if (!nombre || nombre.length < 3) {
+        document.getElementById("errorNombre").textContent =
+          "El nombre debe tener al menos 3 caracteres";
+        valido = false;
+      } else {
+        document.getElementById("errorNombre").textContent = "";
+      }
+
+      if (!validarEmail(email)) {
+        document.getElementById("errorEmailReg").textContent = "Email inválido";
+        valido = false;
+      } else {
+        document.getElementById("errorEmailReg").textContent = "";
+      }
+
+      if (!validarPassword(password)) {
+        document.getElementById("errorPassReg").textContent =
+          "La contraseña debe tener al menos 6 caracteres";
+        valido = false;
+      } else {
+        document.getElementById("errorPassReg").textContent = "";
+      }
+
+      if (!rol) {
+        document.getElementById("errorRol").textContent = "Selecciona un rol";
+        valido = false;
+      } else {
+        document.getElementById("errorRol").textContent = "";
+      }
+
+      if (valido) {
+        let registros = JSON.parse(localStorage.getItem("registros")) || [];
+        registros.push({
+          nombre: nombre,
+          email: email,
+          password: password,
+          rol: rol,
+          fecha: new Date().toLocaleDateString(),
         });
+        localStorage.setItem("registros", JSON.stringify(registros));
+
+        mostrarToast("Registro exitoso ✅", "success");
+        formRegistro.reset();
+
+        // Ir a login automáticamente
+        setTimeout(() => {
+          window.location.hash = "#login";
+        }, 1500);
+      }
     });
+  }
 });
 
-// GUARDAR INSCRIPCIÓN
-document.querySelector("#inscripcion .btn").addEventListener("click", function(){
+/* ==================== FORMULARIO DE LOGIN ==================== */
 
-    const nombre = document.getElementById("nombreEstudiante").value;
-    const email = document.getElementById("emailEstudiante").value;
-    const colegio = document.getElementById("colegioSeleccionado").value;
+document.addEventListener("DOMContentLoaded", function () {
+  const formLogin = document.getElementById("formLogin");
+  if (formLogin) {
+    formLogin.addEventListener("submit", function (e) {
+      e.preventDefault();
 
-    if(nombre && colegio && email){
+      const email = document.getElementById("emailLogin").value.trim();
+      const password = document.getElementById("passwordLogin").value;
 
+      let valido = true;
+
+      if (!validarEmail(email)) {
+        document.getElementById("errorEmailLogin").textContent =
+          "Email inválido";
+        valido = false;
+      } else {
+        document.getElementById("errorEmailLogin").textContent = "";
+      }
+
+      if (!password) {
+        document.getElementById("errorPassLogin").textContent =
+          "Ingresa tu contraseña";
+        valido = false;
+      } else {
+        document.getElementById("errorPassLogin").textContent = "";
+      }
+
+      if (valido) {
+        let registros = JSON.parse(localStorage.getItem("registros")) || [];
+
+        let usuarioValido = registros.find(
+          (r) => r.email === email && r.password === password,
+        );
+
+        if (usuarioValido) {
+          localStorage.setItem("usuarioActivo", JSON.stringify(usuarioValido));
+
+          actualizarVisiblidad(); // Mostrar elementos protegidos
+          mostrarToast("Ingreso exitoso ✅", "success");
+          formLogin.reset();
+          setTimeout(() => {
+            document
+              .getElementById("dashboard")
+              .scrollIntoView({ behavior: "smooth" });
+          }, 500);
+        } else {
+          mostrarToast("Email o contraseña incorrectos ❌", "error");
+        }
+      }
+    });
+  }
+});
+
+/* ==================== FORMULARIO DE INSCRIPCIÓN ==================== */
+
+document.addEventListener("DOMContentLoaded", function () {
+  const formInscripcion = document.getElementById("formInscripcion");
+  if (formInscripcion) {
+    formInscripcion.addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      const colegio = document
+        .getElementById("colegioSeleccionado")
+        .value.trim();
+      const nombreEst = document
+        .getElementById("nombreEstudiante")
+        .value.trim();
+      const cedulaEst = document
+        .getElementById("cedulaEstudiante")
+        .value.trim();
+      const fechaNac = document.getElementById("fechaNacimiento").value;
+      const lugarNac = document.getElementById("lugarNacimiento").value.trim();
+      const grado = document.getElementById("grado").value;
+      const genero = document.getElementById("genero").value;
+      const emailEst = document.getElementById("emailEstudiante").value.trim();
+
+      const nombreAcud = document
+        .getElementById("nombreAcudiente")
+        .value.trim();
+      const cedulaAcud = document
+        .getElementById("cedulaAcudiente")
+        .value.trim();
+      const telefonoAcud = document
+        .getElementById("telefonoAcudiente")
+        .value.trim();
+      const emailAcud = document.getElementById("emailAcudiente").value.trim();
+      const direccion = document.getElementById("direccion").value.trim();
+      const ciudad = document.getElementById("ciudad").value.trim();
+      const pais = document.getElementById("pais").value.trim();
+
+      let valido = true;
+
+      if (!colegio) {
+        mostrarToast("Selecciona un colegio", "error");
+        valido = false;
+      }
+
+      if (!nombreEst || nombreEst.length < 3) {
+        mostrarToast("Nombre del estudiante inválido", "error");
+        valido = false;
+      }
+
+      if (!cedulaEst || cedulaEst.length < 8) {
+        mostrarToast("Cédula del estudiante inválida", "error");
+        valido = false;
+      }
+
+      if (!fechaNac) {
+        mostrarToast("Fecha de nacimiento requerida", "error");
+        valido = false;
+      }
+
+      if (!validarEmail(emailEst)) {
+        mostrarToast("Email del estudiante inválido", "error");
+        valido = false;
+      }
+
+      if (!nombreAcud || nombreAcud.length < 3) {
+        mostrarToast("Nombre del acudiente inválido", "error");
+        valido = false;
+      }
+
+      if (!validarTelefono(telefonoAcud)) {
+        mostrarToast("Teléfono inválido", "error");
+        valido = false;
+      }
+
+      if (!validarEmail(emailAcud)) {
+        mostrarToast("Email del acudiente inválido", "error");
+        valido = false;
+      }
+
+      if (valido) {
         let solicitudes = JSON.parse(localStorage.getItem("solicitudes")) || [];
 
         solicitudes.push({
-            nombre: nombre,
-            colegio: colegio,
-            email: email,
-            estado: "Pendiente"
+          id: Date.now(),
+          colegio: colegio,
+          estudiante: {
+            nombre: nombreEst,
+            cedula: cedulaEst,
+            fechaNacimiento: fechaNac,
+            lugarNacimiento: lugarNac,
+            grado: grado,
+            genero: genero,
+            email: emailEst,
+          },
+          acudiente: {
+            nombre: nombreAcud,
+            cedula: cedulaAcud,
+            telefono: telefonoAcud,
+            email: emailAcud,
+            direccion: direccion,
+            ciudad: ciudad,
+            pais: pais,
+          },
+          estado: "Pendiente",
+          fecha: new Date().toLocaleDateString(),
+          hora: new Date().toLocaleTimeString(),
         });
 
         localStorage.setItem("solicitudes", JSON.stringify(solicitudes));
 
-        alert("Inscripción guardada correctamente ✅");
+        mostrarToast("Inscripción registrada correctamente ✅", "success");
+        formInscripcion.reset();
 
-    } else {
-        alert("Completa todos los campos ❌");
-    }
+        actualizarDashboard();
+      }
+    });
+  }
 });
 
+/* ==================== CAMBIAR FOTO ==================== */
 
-// CONSULTAR ESTADO
-document.querySelector("#estado form").addEventListener("submit", function(e){
-    e.preventDefault();
+document.addEventListener("DOMContentLoaded", function () {
+  const inputFoto = document.getElementById("fotoEstudiante");
+  const nombreFoto = document.getElementById("fotoNombre");
 
-    const correo = document.getElementById("correoConsulta").value;
+  if (inputFoto && nombreFoto) {
+    inputFoto.addEventListener("change", function (e) {
+      if (e.target.files.length > 0) {
+        nombreFoto.textContent = "✓ Archivo: " + e.target.files[0].name;
+      } else {
+        nombreFoto.textContent = "";
+      }
+    });
+  }
+});
 
-    let solicitudes = JSON.parse(localStorage.getItem("solicitudes")) || [];
+/* ==================== CONSULTAR ESTADO ==================== */
 
-    let resultado = document.getElementById("resultadoEstado");
+document.addEventListener("DOMContentLoaded", function () {
+  const formConsultaEstado = document.getElementById("formConsultaEstado");
+  if (formConsultaEstado) {
+    formConsultaEstado.addEventListener("submit", function (e) {
+      e.preventDefault();
 
-    resultado.innerHTML = "";
+      const correo = document.getElementById("correoConsulta").value.trim();
+      const resultadoDiv = document.getElementById("resultadoEstado");
 
-    let encontrados = solicitudes.filter(s => s.email === correo);
+      if (!validarEmail(correo)) {
+        mostrarToast("Email inválido", "error");
+        return;
+      }
 
-    if(encontrados.length > 0){
+      let solicitudes = JSON.parse(localStorage.getItem("solicitudes")) || [];
+      let encontrados = solicitudes.filter(
+        (s) => s.estudiante.email === correo || s.acudiente.email === correo,
+      );
 
-        encontrados.forEach(s => {
-            resultado.innerHTML += `
-                <div class="card">
-                    <h3>Resultado de la solicitud</h3>
-                    <p><strong>Nombre:</strong> ${s.nombre}</p>
-                    <p><strong>Colegio:</strong> ${s.colegio}</p>
-                    <p><strong>Estado:</strong> ${s.estado}</p>
-                </div>
-            `;
+      resultadoDiv.innerHTML = "";
+
+      if (encontrados.length > 0) {
+        encontrados.forEach((s) => {
+          resultadoDiv.innerHTML += `
+                      <div class="card">
+                          <h3>Solicitud de Inscripción</h3>
+                          <p><strong>Estudiante:</strong> ${s.estudiante.nombre}</p>
+                          <p><strong>Colegio:</strong> ${s.colegio}</p>
+                          <p><strong>Grado:</strong> ${s.estudiante.grado}</p>
+                          <p><strong>Estado:</strong> <span style="color: #0252a1; font-weight: bold;">${s.estado}</span></p>
+                          <p><strong>Fecha de Solicitud:</strong> ${s.fecha} a las ${s.hora}</p>
+                      </div>
+                  `;
         });
-
-    } else {
-        resultado.innerHTML = "<p>No se encontraron solicitudes ❌</p>";
-    }
+        mostrarToast("Solicitudes encontradas", "success");
+      } else {
+        resultadoDiv.innerHTML =
+          '<div class="card"><p>No se encontraron solicitudes con ese email ❌</p></div>';
+        mostrarToast("No hay solicitudes", "warning");
+      }
+    });
+  }
 });
+
+/* ==================== ACTUALIZAR DASHBOARD ==================== */
+
+function actualizarDashboard() {
+  let solicitudes = JSON.parse(localStorage.getItem("solicitudes")) || [];
+  let usuarioActivo = JSON.parse(localStorage.getItem("usuarioActivo"));
+
+  const misSolicitudes = document.getElementById("misSolicitudes");
+  if (misSolicitudes && usuarioActivo) {
+    const misSolicitudesFiltr = solicitudes.filter(
+      (s) => s.acudiente.email === usuarioActivo.email,
+    );
+
+    if (misSolicitudesFiltr.length > 0) {
+      misSolicitudes.innerHTML = "";
+      misSolicitudesFiltr.forEach((s) => {
+        misSolicitudes.innerHTML += `
+                    <p>📚 <strong>${s.colegio}</strong> - ${s.estado}</p>
+                `;
+      });
+    }
+  }
+
+  const totalEl = document.getElementById("totalSolicitudes");
+  const pendientesEl = document.getElementById("solicitudesPendientes");
+  const aprobadasEl = document.getElementById("solicitudesAprobadas");
+
+  if (totalEl) totalEl.textContent = solicitudes.length;
+  if (pendientesEl)
+    pendientesEl.textContent = solicitudes.filter(
+      (s) => s.estado === "Pendiente",
+    ).length;
+  if (aprobadasEl)
+    aprobadasEl.textContent = solicitudes.filter(
+      (s) => s.estado === "Aprobada",
+    ).length;
+}

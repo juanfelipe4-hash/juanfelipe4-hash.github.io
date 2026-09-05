@@ -1,5 +1,12 @@
 const DOM = {
   authModal: document.getElementById("authModal"),
+  loginErrorModal: document.getElementById("loginErrorModal"),
+  loginErrorMessage: document.getElementById("loginErrorMessage"),
+  loginForm: document.getElementById("formLoginModal"),
+  loginRole: document.getElementById("loginRole"),
+  roleViews: document.querySelectorAll(
+    "#campos-acudiente, #campos-institucion, #campos-administrador",
+  ),
   clock: document.getElementById("horaActual"),
   inscription: document.getElementById("inscripcion"),
   schoolField: document.getElementById("colegioSeleccionado"),
@@ -102,11 +109,44 @@ function abrirModalAuth(mode = "login") {
   });
 }
 
+function limpiarLogin() {
+  DOM.loginForm?.reset();
+  DOM.loginRole?.classList.remove("is-invalid");
+  DOM.roleViews.forEach((view) => {
+    view.classList.add("hidden");
+    view.setAttribute("aria-hidden", "true");
+  });
+  DOM.modal
+    ?.querySelector(".auth-panel")
+    ?.classList.remove(
+      "role-acudiente",
+      "role-institucion",
+      "role-administrador",
+    );
+  ["errorRoleLogin", "errorEmailLogin", "errorPassLogin"].forEach((id) => {
+    const error = document.getElementById(id);
+    if (error) error.textContent = "";
+  });
+  cerrarErrorLogin();
+}
+
 function cerrarModalAuth() {
   const { authModal: modal } = DOM;
   if (!modal) return;
   modal.classList.remove("is-open");
   modal.setAttribute("aria-hidden", "true");
+  limpiarLogin();
+}
+
+function mostrarErrorLogin(mensaje) {
+  DOM.loginErrorMessage.textContent = mensaje;
+  DOM.loginErrorModal.classList.add("is-open");
+  DOM.loginErrorModal.setAttribute("aria-hidden", "false");
+}
+
+function cerrarErrorLogin() {
+  DOM.loginErrorModal.classList.remove("is-open");
+  DOM.loginErrorModal.setAttribute("aria-hidden", "true");
 }
 
 function guardarColegioSeleccionado(colegio) {
@@ -233,15 +273,62 @@ function bindSearchFilters() {
 function bindAuthForms() {
   const formLoginModal = document.getElementById("formLoginModal");
   const formRegistroModal = document.getElementById("formRegistroModal");
+  const roleFields = {
+    acudiente: ["emailLoginAcudiente", "passwordLoginAcudiente"],
+    institucion: ["emailLoginInstitucion", "passwordLoginInstitucion"],
+    administrador: ["emailLoginAdministrador", "passwordLoginAdministrador"],
+  };
+  const roleThemes = [
+    "role-acudiente",
+    "role-institucion",
+    "role-administrador",
+  ];
+
+  DOM.loginRole?.addEventListener("change", ({ target }) => {
+    const role = target.value;
+    const panel = DOM.modal?.querySelector(".auth-panel");
+    panel?.classList.remove(...roleThemes);
+    role && panel?.classList.add(`role-${role}`);
+    DOM.roleViews.forEach((view) => {
+      view.classList.add("hidden");
+      view.setAttribute("aria-hidden", "true");
+    });
+    const activeView = document.getElementById(`campos-${role}`);
+    activeView?.classList.remove("hidden");
+    activeView?.setAttribute("aria-hidden", "false");
+  });
 
   formLoginModal?.addEventListener("submit", function (event) {
     event.preventDefault();
-    const email = document.getElementById("emailLoginModal")?.value.trim();
-    const password = document.getElementById("passwordLoginModal")?.value;
+    const role = DOM.loginRole?.value;
+    const [emailId, passwordId] = roleFields[role] || [];
+    const email = document.getElementById(emailId)?.value.trim();
+    const password = document.getElementById(passwordId)?.value;
+    const activeView = document.getElementById(`campos-${role}`);
+
+    if (!role) {
+      document.getElementById("errorRoleLogin").textContent =
+        "Selecciona un rol";
+      mostrarErrorLogin("Selecciona el tipo de acceso antes de continuar.");
+      return;
+    }
+    document.getElementById("errorRoleLogin").textContent = "";
+
+    const emptyField = [...activeView.querySelectorAll("input, select")].find(
+      (field) => !field.value.trim(),
+    );
+    if (emptyField) {
+      emptyField.focus();
+      mostrarErrorLogin(
+        `Completa el campo: ${emptyField.labels?.[0]?.textContent || "dato requerido"}.`,
+      );
+      return;
+    }
 
     if (!validarEmail(email)) {
       document.getElementById("errorEmailLogin").textContent =
         "Correo inválido";
+      mostrarErrorLogin("Ingresa un correo electrónico válido.");
       return;
     }
     document.getElementById("errorEmailLogin").textContent = "";
@@ -249,17 +336,21 @@ function bindAuthForms() {
     if (!validarPassword(password)) {
       document.getElementById("errorPassLogin").textContent =
         "La contraseña debe tener al menos 6 caracteres";
+      mostrarErrorLogin("La contraseña debe tener al menos 6 caracteres.");
       return;
     }
     document.getElementById("errorPassLogin").textContent = "";
 
     const registros = getStored("registros", []);
     const usuario = registros.find(
-      (item) => item.email === email && item.password === password,
+      (item) =>
+        item.email === email &&
+        item.password === password &&
+        (item.rol === role || (role === "acudiente" && item.rol === "padre")),
     );
 
     if (!usuario) {
-      mostrarToast("Email o contraseña incorrectos.", "error");
+      mostrarErrorLogin("El correo, la contraseña o el rol son incorrectos.");
       return;
     }
 
@@ -272,6 +363,13 @@ function bindAuthForms() {
     if (colegioSeleccionado) {
       DOM.inscription?.scrollIntoView({ behavior: "smooth" });
     }
+  });
+
+  ["closeLoginError", "acceptLoginError"].forEach((id) =>
+    document.getElementById(id)?.addEventListener("click", cerrarErrorLogin),
+  );
+  DOM.loginErrorModal?.addEventListener("click", (event) => {
+    if (event.target === DOM.loginErrorModal) cerrarErrorLogin();
   });
 
   formRegistroModal?.addEventListener("submit", function (event) {
@@ -312,13 +410,9 @@ function bindAuthForms() {
     registros.push({ nombre, email, password, rol });
     localStorage.setItem("registros", JSON.stringify(registros));
 
-    localStorage.setItem(
-      "usuarioActivo",
-      JSON.stringify({ nombre, email, password, rol }),
-    );
-    actualizarVisibilidad();
+    formRegistroModal.reset();
     cerrarModalAuth();
-    mostrarToast("Cuenta creada exitosamente ✅", "success");
+    mostrarToast("Cuenta creada. Inicia sesión para continuar ✅", "success");
   });
 
   DOM.authTabs.forEach((tab) => {
@@ -348,6 +442,7 @@ function bindLogout() {
   const logoutButton = document.getElementById("btnLogout");
   logoutButton?.addEventListener("click", () => {
     localStorage.removeItem("usuarioActivo");
+    limpiarLogin();
     actualizarVisibilidad();
     mostrarToast("Sesión cerrada ✅", "success");
     window.location.hash = "#inicio";

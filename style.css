@@ -794,6 +794,44 @@ body.dark-mode .leaflet-popup-tip {
   opacity: 1;
   visibility: visible;
 }
+.login-error-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 3000;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background: rgba(8, 18, 31, 0.62);
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 0.2s ease,
+    visibility 0.2s ease;
+}
+.login-error-modal.is-open {
+  opacity: 1;
+  visibility: visible;
+}
+.login-error-panel {
+  position: relative;
+  width: min(100%, 390px);
+  padding: 2rem 1.5rem 1.5rem;
+  border: 2px solid var(--color-danger);
+  border-radius: 18px;
+  background: var(--color-surface);
+  color: var(--color-text);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.3);
+  text-align: center;
+}
+.login-error-panel strong {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: var(--color-danger);
+  font-size: 1.15rem;
+}
+.login-error-panel p {
+  margin-bottom: 1.25rem;
+}
 .auth-panel {
   position: relative;
   z-index: 1;
@@ -807,6 +845,51 @@ body.dark-mode .leaflet-popup-tip {
 }
 .auth-panel * {
   font-family: inherit;
+}
+.auth-panel.role-acudiente {
+  --role-accent: #159a68;
+  --role-surface: #effbf5;
+}
+.auth-panel.role-institucion {
+  --role-accent: #1769aa;
+  --role-surface: #edf6ff;
+}
+.auth-panel.role-administrador {
+  --role-accent: #8b9cff;
+  --role-surface: #172033;
+  background: #101827;
+  color: #f2f5ff;
+}
+.auth-panel[class*="role-"] .auth-tab.active,
+.auth-panel[class*="role-"] .btn-primary {
+  background: var(--role-accent);
+  border-color: var(--role-accent);
+}
+.auth-panel[class*="role-"] .auth-tab,
+.auth-panel[class*="role-"] input,
+.auth-panel[class*="role-"] select {
+  border-color: color-mix(in srgb, var(--role-accent) 42%, var(--color-border));
+}
+.auth-panel[class*="role-"] input:focus,
+.auth-panel[class*="role-"] select:focus {
+  outline-color: color-mix(in srgb, var(--role-accent) 30%, transparent);
+  border-color: var(--role-accent);
+}
+.auth-panel.role-administrador input,
+.auth-panel.role-administrador select {
+  background: var(--role-surface);
+  color: #f2f5ff;
+}
+.role-view {
+  display: none;
+  padding: 0.8rem;
+  border: 1px solid var(--role-accent, var(--color-border));
+  border-radius: 14px;
+  background: var(--role-surface, var(--color-bg));
+}
+.role-view:not(.hidden) {
+  display: grid;
+  gap: 0.75rem;
 }
 .modal-close {
   position: absolute;

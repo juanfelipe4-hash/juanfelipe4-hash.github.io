@@ -1251,25 +1251,123 @@
 
         <form id="formLoginModal" class="auth-form active">
           <div class="form-group">
-            <label for="emailLoginModal">Correo electrónico *</label>
-            <input
-              id="emailLoginModal"
-              type="email"
-              placeholder="correo@ejemplo.com"
-              required
-            />
-            <span class="error-msg" id="errorEmailLogin"></span>
+            <label for="loginRole">Tipo de acceso *</label>
+            <select id="loginRole" required>
+              <option value="">Seleccione un rol</option>
+              <option value="acudiente">Acudiente</option>
+              <option value="institucion">Institución</option>
+              <option value="administrador">Administrador</option>
+            </select>
           </div>
-          <div class="form-group">
-            <label for="passwordLoginModal">Contraseña *</label>
-            <input
-              id="passwordLoginModal"
-              type="password"
-              placeholder="Tu contraseña"
-              required
-            />
-            <span class="error-msg" id="errorPassLogin"></span>
+          <div
+            id="campos-acudiente"
+            class="role-view hidden"
+            aria-hidden="true"
+          >
+            <div class="form-group">
+              <label for="emailLoginAcudiente">Correo del acudiente *</label>
+              <input
+                id="emailLoginAcudiente"
+                type="email"
+                placeholder="acudiente@ejemplo.com"
+              />
+            </div>
+            <div class="form-group">
+              <label for="passwordLoginAcudiente">Contraseña *</label>
+              <input
+                id="passwordLoginAcudiente"
+                type="password"
+                placeholder="Tu contraseña"
+              />
+            </div>
           </div>
+          <div
+            id="campos-institucion"
+            class="role-view hidden"
+            aria-hidden="true"
+          >
+            <div class="form-group">
+              <label for="emailLoginInstitucion">Correo institucional *</label>
+              <input
+                id="emailLoginInstitucion"
+                type="email"
+                placeholder="contacto@institucion.edu.co"
+              />
+            </div>
+            <div class="form-group">
+              <label for="passwordLoginInstitucion"
+                >Contraseña institucional *</label
+              >
+              <input
+                id="passwordLoginInstitucion"
+                type="password"
+                placeholder="Tu contraseña"
+              />
+            </div>
+            <div class="form-group">
+              <label for="codigoInstitucion">Código de institución *</label>
+              <input
+                id="codigoInstitucion"
+                type="text"
+                placeholder="Código asignado"
+              />
+            </div>
+            <div class="form-group">
+              <label for="nitInstitucion">NIT de la institución</label>
+              <input
+                id="nitInstitucion"
+                type="text"
+                inputmode="numeric"
+                placeholder="NIT institucional"
+              />
+            </div>
+          </div>
+          <div
+            id="campos-administrador"
+            class="role-view hidden"
+            aria-hidden="true"
+          >
+            <div class="form-group">
+              <label for="emailLoginAdministrador"
+                >Correo administrativo *</label
+              >
+              <input
+                id="emailLoginAdministrador"
+                type="email"
+                placeholder="admin@cuposescolares.gov.co"
+              />
+            </div>
+            <div class="form-group">
+              <label for="passwordLoginAdministrador"
+                >Contraseña administrativa *</label
+              >
+              <input
+                id="passwordLoginAdministrador"
+                type="password"
+                placeholder="Tu contraseña"
+              />
+            </div>
+            <div class="form-group">
+              <label for="codigoAdministrador">Código de administrador *</label>
+              <input
+                id="codigoAdministrador"
+                type="text"
+                placeholder="Código seguro"
+              />
+            </div>
+            <div class="form-group">
+              <label for="nivelAcceso">Nivel de acceso</label>
+              <select id="nivelAcceso">
+                <option value="" selected disabled>Seleccione</option>
+                <option value="operativo">Operativo</option>
+                <option value="supervisor">Supervisor</option>
+                <option value="total">Control total</option>
+              </select>
+            </div>
+          </div>
+          <span class="error-msg" id="errorRoleLogin"></span>
+          <span class="error-msg" id="errorEmailLogin"></span>
+          <span class="error-msg" id="errorPassLogin"></span>
           <button type="submit" class="btn btn-primary">Ingresar</button>
           <p class="form-hint">
             ¿No tienes cuenta?
@@ -1314,7 +1412,7 @@
             <label for="rolRegistroModal">Rol *</label>
             <select id="rolRegistroModal" required>
               <option value="">Seleccione</option>
-              <option value="padre">Padre/Acudiente</option>
+              <option value="acudiente">Acudiente</option>
               <option value="institucion">Institución</option>
               <option value="administrador">Administrador</option>
             </select>
@@ -1322,6 +1420,30 @@
           </div>
           <button type="submit" class="btn btn-primary">Crear cuenta</button>
         </form>
+      </div>
+    </div>
+
+    <div
+      class="login-error-modal"
+      id="loginErrorModal"
+      aria-hidden="true"
+      role="alertdialog"
+      aria-modal="true"
+    >
+      <div class="login-error-panel">
+        <button
+          class="modal-close"
+          id="closeLoginError"
+          type="button"
+          aria-label="Cerrar error"
+        >
+          ×
+        </button>
+        <strong>Revisa los datos</strong>
+        <p id="loginErrorMessage"></p>
+        <button class="btn btn-primary" id="acceptLoginError" type="button">
+          Entendido
+        </button>
       </div>
     </div>
 

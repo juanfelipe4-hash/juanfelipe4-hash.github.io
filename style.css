@@ -68,6 +68,10 @@ select {
 main {
   display: block;
 }
+main > .section {
+  content-visibility: auto;
+  contain-intrinsic-size: 1px 700px;
+}
 .header {
   position: sticky;
   top: 0;
@@ -606,9 +610,6 @@ body.dark-mode .map-popup {
   border-radius: 12px;
   font-weight: 800;
   box-shadow: 0 10px 20px rgba(11, 111, 216, 0.18);
-}
-body.dark-mode .map-popup {
-  background: linear-gradient(135deg, #13263e, #112638);
 }
 body.dark-mode .leaflet-popup-tip {
   background: #112638;

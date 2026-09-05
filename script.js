@@ -1,3 +1,28 @@
+const DOM = {
+  authModal: document.getElementById("authModal"),
+  clock: document.getElementById("horaActual"),
+  inscription: document.getElementById("inscripcion"),
+  schoolField: document.getElementById("colegioSeleccionado"),
+  studentName: document.getElementById("nombreEstudiante"),
+  guardianName: document.getElementById("nombreAcudiente"),
+  confirmSchool: document.getElementById("confirmColegio"),
+  confirmStudent: document.getElementById("confirmEstudiante"),
+  confirmGuardian: document.getElementById("confirmAcudiente"),
+  photoName: document.getElementById("fotoNombre"),
+  dashboard: document.getElementById("dashboard"),
+  closeAuth: document.getElementById("closeAuthModal"),
+  authTabs: document.querySelectorAll(".auth-tab"),
+  authForms: document.querySelectorAll(".auth-form"),
+  authButtons: document.querySelectorAll(".open-auth, .btn-login"),
+  authRequired: document.querySelectorAll(".auth-required"),
+  colegioCards: document.querySelectorAll(".colegio-card"),
+  schoolButtons: document.querySelectorAll(".inscribirse-btn"),
+  navLinks: document.querySelectorAll(".nav-links a"),
+};
+
+const getStored = (key, fallback = null) =>
+  JSON.parse(localStorage.getItem(key) || JSON.stringify(fallback));
+
 function mostrarToast(mensaje, tipo = "success", duracion = 3000) {
   const toast = document.createElement("div");
   toast.className = `toast ${tipo}`;
@@ -28,17 +53,13 @@ function validarPassword(password) {
 }
 
 function actualizarVisibilidad() {
-  const usuarioActivo = JSON.parse(
-    localStorage.getItem("usuarioActivo") || "null",
-  );
-  const protegidos = document.querySelectorAll(".auth-required");
+  const usuarioActivo = getStored("usuarioActivo");
 
-  protegidos.forEach((elemento) => {
+  DOM.authRequired.forEach((elemento) => {
     elemento.classList.toggle("visible", Boolean(usuarioActivo));
   });
 
-  const authButtons = document.querySelectorAll(".open-auth, .btn-login");
-  authButtons.forEach((boton) => {
+  DOM.authButtons.forEach((boton) => {
     boton.style.display = usuarioActivo ? "none" : "inline-flex";
   });
 
@@ -55,14 +76,11 @@ function actualizarHora() {
     .map((valor) => String(valor).padStart(2, "0"))
     .join(":");
 
-  const reloj = document.getElementById("horaActual");
-  if (reloj) {
-    reloj.textContent = hora;
-  }
+  if (DOM.clock) DOM.clock.textContent = hora;
 }
 
 function abrirModalAuth(mode = "login") {
-  const modal = document.getElementById("authModal");
+  const { authModal: modal, authTabs: tabs, authForms: forms } = DOM;
   if (!modal) return;
 
   if (window.mapaCupos && typeof window.mapaCupos.closePopup === "function") {
@@ -71,9 +89,6 @@ function abrirModalAuth(mode = "login") {
 
   modal.classList.add("is-open");
   modal.setAttribute("aria-hidden", "false");
-
-  const tabs = document.querySelectorAll(".auth-tab");
-  const forms = document.querySelectorAll(".auth-form");
 
   tabs.forEach((tab) => {
     const activo = tab.dataset.authTab === mode;
@@ -88,7 +103,7 @@ function abrirModalAuth(mode = "login") {
 }
 
 function cerrarModalAuth() {
-  const modal = document.getElementById("authModal");
+  const { authModal: modal } = DOM;
   if (!modal) return;
   modal.classList.remove("is-open");
   modal.setAttribute("aria-hidden", "true");
@@ -96,36 +111,31 @@ function cerrarModalAuth() {
 
 function guardarColegioSeleccionado(colegio) {
   localStorage.setItem("colegioSeleccionado", colegio || "");
-  const campo = document.getElementById("colegioSeleccionado");
-  if (campo) {
-    campo.value = colegio || "";
-  }
-  const confirmColegio = document.getElementById("confirmColegio");
-  if (confirmColegio) {
-    confirmColegio.textContent = colegio || "-";
-  }
+  DOM.schoolField && (DOM.schoolField.value = colegio || "");
+  DOM.confirmSchool && (DOM.confirmSchool.textContent = colegio || "-");
 }
 
 function actualizarConfirmacion() {
-  const nombre =
-    document.getElementById("nombreEstudiante")?.value?.trim() || "-";
-  const acudiente =
-    document.getElementById("nombreAcudiente")?.value?.trim() || "-";
-  const confirmEstudiante = document.getElementById("confirmEstudiante");
-  const confirmAcudiente = document.getElementById("confirmAcudiente");
+  const nombre = DOM.studentName?.value.trim() || "-";
+  const acudiente = DOM.guardianName?.value.trim() || "-";
+  DOM.confirmStudent && (DOM.confirmStudent.textContent = nombre);
+  DOM.confirmGuardian && (DOM.confirmGuardian.textContent = acudiente);
+}
 
-  if (confirmEstudiante) confirmEstudiante.textContent = nombre;
-  if (confirmAcudiente) confirmAcudiente.textContent = acudiente;
+function obtenerInfoColegio(nombre) {
+  const tarjeta = [...DOM.colegioCards].find(
+    (card) => card.querySelector("h3")?.textContent.trim() === nombre,
+  );
+  if (!tarjeta) return {};
+  const { city, grade, level, availability } = tarjeta.dataset;
+  return { ciudad: city, grado: grade, nivel: level, cupos: availability };
 }
 
 function bindSchoolButtons() {
-  const botones = document.querySelectorAll(".inscribirse-btn");
-  botones.forEach((boton) => {
+  DOM.schoolButtons.forEach((boton) => {
     boton.addEventListener("click", function () {
       const colegio = this.dataset.colegio;
-      const usuario = JSON.parse(
-        localStorage.getItem("usuarioActivo") || "null",
-      );
+      const usuario = getStored("usuarioActivo");
 
       guardarColegioSeleccionado(colegio);
 
@@ -135,9 +145,7 @@ function bindSchoolButtons() {
         return;
       }
 
-      document
-        .getElementById("inscripcion")
-        ?.scrollIntoView({ behavior: "smooth" });
+      DOM.inscription?.scrollIntoView({ behavior: "smooth" });
       mostrarToast(`Colegio seleccionado: ${colegio}`, "success");
     });
   });
@@ -166,7 +174,7 @@ function bindMenu() {
     menuToggle.setAttribute("aria-expanded", String(active));
   });
 
-  document.querySelectorAll(".nav-links a").forEach((link) => {
+  DOM.navLinks.forEach((link) => {
     link.addEventListener("click", () => {
       nav.classList.remove("active");
       menuToggle?.setAttribute("aria-expanded", "false");
@@ -188,7 +196,7 @@ function bindSearchFilters() {
     const level = levelFilter?.value || "";
     const onlyAvailable = availableOnly?.checked || false;
 
-    document.querySelectorAll(".colegio-card").forEach((card) => {
+    DOM.colegioCards.forEach((card) => {
       const nombre = card.querySelector("h3")?.textContent.toLowerCase() || "";
       const dataCity = card.dataset.city || "";
       const dataGrade = card.dataset.grade || "";
@@ -245,7 +253,7 @@ function bindAuthForms() {
     }
     document.getElementById("errorPassLogin").textContent = "";
 
-    const registros = JSON.parse(localStorage.getItem("registros") || "[]");
+    const registros = getStored("registros", []);
     const usuario = registros.find(
       (item) => item.email === email && item.password === password,
     );
@@ -262,9 +270,7 @@ function bindAuthForms() {
 
     const colegioSeleccionado = localStorage.getItem("colegioSeleccionado");
     if (colegioSeleccionado) {
-      document
-        .getElementById("inscripcion")
-        ?.scrollIntoView({ behavior: "smooth" });
+      DOM.inscription?.scrollIntoView({ behavior: "smooth" });
     }
   });
 
@@ -302,7 +308,7 @@ function bindAuthForms() {
     }
     document.getElementById("errorRol").textContent = "";
 
-    const registros = JSON.parse(localStorage.getItem("registros") || "[]");
+    const registros = getStored("registros", []);
     registros.push({ nombre, email, password, rol });
     localStorage.setItem("registros", JSON.stringify(registros));
 
@@ -315,7 +321,7 @@ function bindAuthForms() {
     mostrarToast("Cuenta creada exitosamente ✅", "success");
   });
 
-  document.querySelectorAll(".auth-tab").forEach((tab) => {
+  DOM.authTabs.forEach((tab) => {
     tab.addEventListener("click", () => abrirModalAuth(tab.dataset.authTab));
   });
 
@@ -326,14 +332,12 @@ function bindAuthForms() {
     });
   });
 
-  document
-    .getElementById("closeAuthModal")
-    ?.addEventListener("click", cerrarModalAuth);
-  document.getElementById("authModal")?.addEventListener("click", (event) => {
+  DOM.closeAuth?.addEventListener("click", cerrarModalAuth);
+  DOM.authModal?.addEventListener("click", (event) => {
     if (event.target.id === "authModal") cerrarModalAuth();
   });
 
-  document.querySelectorAll(".open-auth, .btn-login").forEach((boton) => {
+  DOM.authButtons.forEach((boton) => {
     boton.addEventListener("click", () =>
       abrirModalAuth(boton.dataset.authTarget || "login"),
     );
@@ -352,7 +356,7 @@ function bindLogout() {
 
 function bindPhotoInput() {
   const input = document.getElementById("fotoEstudiante");
-  const nombre = document.getElementById("fotoNombre");
+  const { photoName: nombre } = DOM;
   input?.addEventListener("change", function () {
     const fileName = this.files?.[0]?.name || "";
     nombre.textContent = fileName ? `Archivo seleccionado: ${fileName}` : "";
@@ -379,16 +383,12 @@ function bindStepperForm() {
     nextButton.classList.toggle("hidden", currentStep === panels.length - 1);
     submitButton.classList.toggle("hidden", currentStep !== panels.length - 1);
 
-    const colegio =
-      document.getElementById("colegioSeleccionado")?.value || "-";
-    const nombre = document.getElementById("nombreEstudiante")?.value || "-";
-    const acudiente = document.getElementById("nombreAcudiente")?.value || "-";
-    document.getElementById("confirmColegio") &&
-      (document.getElementById("confirmColegio").textContent = colegio);
-    document.getElementById("confirmEstudiante") &&
-      (document.getElementById("confirmEstudiante").textContent = nombre);
-    document.getElementById("confirmAcudiente") &&
-      (document.getElementById("confirmAcudiente").textContent = acudiente);
+    const colegio = DOM.schoolField?.value || "-";
+    const nombre = DOM.studentName?.value || "-";
+    const acudiente = DOM.guardianName?.value || "-";
+    DOM.confirmSchool && (DOM.confirmSchool.textContent = colegio);
+    DOM.confirmStudent && (DOM.confirmStudent.textContent = nombre);
+    DOM.confirmGuardian && (DOM.confirmGuardian.textContent = acudiente);
   };
 
   prevButton?.addEventListener("click", () => {
@@ -422,35 +422,35 @@ function bindStepperForm() {
   const formInscripcion = document.getElementById("formInscripcion");
   formInscripcion?.addEventListener("submit", (event) => {
     event.preventDefault();
-    const colegio =
-      document.getElementById("colegioSeleccionado")?.value || "Sin colegio";
-    const estudiante = document.getElementById("nombreEstudiante")?.value || "";
+    const colegio = DOM.schoolField?.value || "Sin colegio";
+    const estudiante = DOM.studentName?.value || "";
+    const infoColegio = obtenerInfoColegio(colegio);
 
     const solicitudes = JSON.parse(localStorage.getItem("solicitudes") || "[]");
     solicitudes.push({
       colegio,
       estudiante,
+      ...infoColegio,
       fecha: new Date().toLocaleDateString(),
       estado: "En revisión",
     });
     localStorage.setItem("solicitudes", JSON.stringify(solicitudes));
 
     mostrarToast("Solicitud enviada correctamente ✅", "success");
+    initDashboard();
     formInscripcion.reset();
-    document.getElementById("fotoNombre").textContent = "";
-    document.getElementById("confirmColegio").textContent = "-";
-    document.getElementById("confirmEstudiante").textContent = "-";
-    document.getElementById("confirmAcudiente").textContent = "-";
+    DOM.photoName.textContent = "";
+    DOM.confirmSchool.textContent =
+      DOM.confirmStudent.textContent =
+      DOM.confirmGuardian.textContent =
+        "-";
     currentStep = 0;
     updateView();
+    DOM.dashboard?.scrollIntoView({ behavior: "smooth", block: "start" });
   });
 
-  document
-    .getElementById("nombreEstudiante")
-    ?.addEventListener("input", actualizarConfirmacion);
-  document
-    .getElementById("nombreAcudiente")
-    ?.addEventListener("input", actualizarConfirmacion);
+  DOM.studentName?.addEventListener("input", actualizarConfirmacion);
+  DOM.guardianName?.addEventListener("input", actualizarConfirmacion);
 
   updateView();
 }
@@ -477,13 +477,22 @@ function bindConsultaEstado() {
         colegio: "Institución Educativa Santa Librada",
         fecha: "09/08/2026",
       };
+      const infoColegio = {
+        ...obtenerInfoColegio(solicitud.colegio),
+        ...solicitud,
+      };
 
       resultado.innerHTML = `
       <div class="card">
         <h3>Estado de la solicitud</h3>
-        <p><strong>Estado:</strong> ${solicitud.estado}</p>
-        <p><strong>Colegio:</strong> ${solicitud.colegio}</p>
-        <p><strong>Fecha:</strong> ${solicitud.fecha}</p>
+        <p><strong>Estado:</strong> ${infoColegio.estado}</p>
+        <p><strong>Colegio:</strong> ${infoColegio.colegio}</p>
+        <p><strong>Ciudad:</strong> ${infoColegio.ciudad || "No disponible"}</p>
+        <p><strong>Nivel:</strong> ${infoColegio.nivel || "No disponible"}</p>
+        <p><strong>Grado:</strong> ${infoColegio.grado || "No disponible"}</p>
+        <p><strong>Cupos disponibles:</strong> ${infoColegio.cupos || "No disponible"}</p>
+        <p><strong>Estudiante:</strong> ${infoColegio.estudiante || "No disponible"}</p>
+        <p><strong>Fecha:</strong> ${infoColegio.fecha}</p>
       </div>
     `;
     });
@@ -613,6 +622,23 @@ function initMap() {
   });
 }
 
+function lazyInitMap() {
+  const mapElement = document.getElementById("mapa");
+  if (!mapElement) return;
+  let observer;
+  const load = () => {
+    observer?.disconnect();
+    initMap();
+  };
+  observer =
+    "IntersectionObserver" in window
+      ? new IntersectionObserver(([entry]) => entry.isIntersecting && load(), {
+          rootMargin: "300px",
+        })
+      : null;
+  observer ? observer.observe(mapElement) : load();
+}
+
 function initDashboard() {
   const solicitudes = JSON.parse(localStorage.getItem("solicitudes") || "[]");
   const totalSolicitudes = document.getElementById("totalSolicitudes");
@@ -646,9 +672,7 @@ document.addEventListener("DOMContentLoaded", () => {
     localStorage.getItem("usuarioActivo") || "null",
   );
   if (usuarioActivo) {
-    document
-      .querySelectorAll(".auth-required")
-      .forEach((el) => el.classList.add("visible"));
+    DOM.authRequired.forEach((el) => el.classList.add("visible"));
   }
 
   actualizarVisibilidad();
@@ -664,7 +688,7 @@ document.addEventListener("DOMContentLoaded", () => {
   bindPhotoInput();
   bindStepperForm();
   bindConsultaEstado();
-  initMap();
+  lazyInitMap();
   initDashboard();
 
   const colegioGuardado = localStorage.getItem("colegioSeleccionado");

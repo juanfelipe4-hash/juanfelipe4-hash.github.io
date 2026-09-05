@@ -2,13 +2,350 @@
 <html lang="es">
   <head>
     <meta charset="UTF-8" />
-    <title>Plataforma Cupos Escolares</title>
+    <title>Buscar cupos escolares en el Valle del Cauca</title>
+    <meta
+      name="description"
+      content="Encuentra y solicita cupos escolares disponibles en instituciones del Valle del Cauca con un proceso claro y rápido."
+    />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-    <!-- CSS -->
-    <link rel="stylesheet" href="style.css" />
-
-    <!-- Leaflet CSS -->
+    <link rel="canonical" href="https://example.com/cupos-escolares" />
+    <style>
+      :root {
+        --c1: #0b6fd8;
+        --c1d: #084a94;
+        --bg: #f3f7fb;
+        --surface: #fff;
+        --text: #17212f;
+        --muted: #5d6b7a;
+        --border: #dfeaf4;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        margin: 0;
+        font-family: "Segoe UI", "Inter", Arial, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        line-height: 1.6;
+        letter-spacing: -0.01em;
+      }
+      .header {
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        padding: 1rem 2rem;
+        background: rgba(11, 111, 216, 0.96);
+        box-shadow: 0 8px 22px rgba(7, 38, 75, 0.18);
+      }
+      .logo {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        font-weight: 200;
+        color: #fff;
+      }
+      .header-actions {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+      }
+      .system-clock {
+        min-width: 108px;
+        padding: 0.45rem 0.7rem;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.15);
+        color: #fff;
+        font-size: 0.8rem;
+        font-weight: 700;
+        text-align: center;
+      }
+      .nav-container,
+      .nav-links {
+        display: flex;
+      }
+      .nav-links {
+        list-style: none;
+        align-items: center;
+        gap: 0.4rem;
+        margin: 0;
+        padding: 0;
+      }
+      .nav-links a,
+      .btn,
+      .btn-login,
+      .btn-logout,
+      .open-auth {
+        font: inherit;
+      }
+      .nav-links a,
+      .btn-login,
+      .btn-logout,
+      .open-auth {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 2.5rem;
+        padding: 0.6rem 0.9rem;
+        border-radius: 999px;
+        color: #fff;
+        text-decoration: none;
+        background: transparent;
+        font-weight: 600;
+      }
+      .hero {
+        display: grid;
+        grid-template-columns: 1.2fr 0.9fr;
+        align-items: center;
+        gap: 2rem;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 4.5rem 2rem 3rem;
+        background: linear-gradient(135deg, #0b6fd8 0%, #0a3f83 100%);
+        color: #fff;
+      }
+      .hero-copy {
+        max-width: 600px;
+      }
+      .hero h1 {
+        font-size: clamp(2.2rem, 4vw, 4rem);
+        line-height: 1.1;
+        margin: 0 0 1rem;
+      }
+      .hero p {
+        font-size: 1.1rem;
+        max-width: 45rem;
+        color: rgba(255, 255, 255, 0.9);
+        margin: 0;
+      }
+      .hero-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin-top: 2rem;
+      }
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 3.1rem;
+        padding: 0.8rem 1.25rem;
+        border: none;
+        border-radius: 12px;
+        font-weight: 700;
+        cursor: pointer;
+        text-decoration: none;
+      }
+      .btn-primary {
+        background: linear-gradient(135deg, var(--c1), var(--c1d));
+        color: #fff;
+      }
+      .btn-secondary {
+        background: rgba(255, 255, 255, 0.16);
+        color: #fff;
+      }
+      .hero-stats {
+        list-style: none;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1.2rem;
+        margin: 2rem 0 0;
+        padding: 0;
+      }
+      .hero-stats li {
+        min-width: 130px;
+        display: flex;
+        flex-direction: column;
+        gap: 0.2rem;
+        padding: 0.7rem 0.9rem;
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+      }
+      .hero-stats strong {
+        font-size: 1.2rem;
+      }
+      .hero-stats span {
+        font-size: 0.78rem;
+        color: rgba(255, 255, 255, 0.82);
+      }
+      .section {
+        max-width: 1200px;
+        margin: 2rem auto;
+        padding: 2rem 2rem 2.2rem;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 24px;
+        box-shadow: 0 16px 35px rgba(28, 63, 102, 0.12);
+      }
+      .section h2 {
+        font-size: clamp(1.8rem, 3vw, 2.5rem);
+        margin: 0 0 0.7rem;
+      }
+      .filters {
+        display: grid;
+        grid-template-columns: 1.5fr repeat(3, minmax(160px, 1fr)) auto;
+        gap: 1rem;
+        align-items: end;
+        margin-bottom: 1.5rem;
+      }
+      .field-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+      .field-group label,
+      .availability-toggle {
+        font-weight: 600;
+        color: var(--text);
+      }
+      input,
+      select {
+        width: 100%;
+        min-height: 3.1rem;
+        padding: 0.8rem 1rem;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        background: var(--bg);
+        color: var(--text);
+      }
+      #mapa {
+        height: 380px;
+        width: 100%;
+        border-radius: 18px;
+        overflow: hidden;
+        border: 1px solid var(--border);
+      }
+      .auth-modal {
+        position: fixed;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1rem;
+        background: rgba(0, 0, 0, 0.55);
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.2s ease;
+        z-index: 2000;
+      }
+      .auth-modal.is-open {
+        opacity: 1;
+        visibility: visible;
+      }
+      .auth-panel {
+        position: relative;
+        z-index: 1;
+        width: min(100%, 500px);
+        padding: 2rem 1.5rem 1.5rem;
+        border-radius: 22px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        box-shadow: 0 24px 60px rgba(0, 0, 0, 0.28);
+        font-family: "Segoe UI", "Inter", Arial, sans-serif;
+      }
+      .auth-panel * {
+        font-family: inherit;
+      }
+      .auth-tabs {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+      }
+      .auth-tab {
+        padding: 0.85rem 1rem;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        background: var(--bg);
+        color: var(--text);
+        font-weight: 700;
+        cursor: pointer;
+      }
+      .auth-tab.active {
+        background: var(--c1);
+        color: #fff;
+        border-color: var(--c1);
+      }
+      .auth-form {
+        display: none;
+      }
+      .auth-form.active {
+        display: block;
+      }
+      .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+      .error-msg {
+        min-height: 1.2em;
+        color: #d93025;
+        font-size: 0.75rem;
+      }
+      .form-hint {
+        margin-top: 1rem;
+      }
+      .btn-primary {
+        box-shadow: 0 8px 18px rgba(11, 111, 216, 0.18);
+      }
+      @media (max-width: 760px) {
+        .header {
+          flex-wrap: wrap;
+          padding: 0.85rem 1rem;
+        }
+        .nav-container {
+          display: none;
+          width: 100%;
+        }
+        .nav-container.active {
+          display: block;
+        }
+        .nav-links {
+          flex-direction: column;
+          align-items: stretch;
+          padding-top: 0.5rem;
+        }
+        .nav-links li,
+        .nav-links a,
+        .btn-login,
+        .btn-logout,
+        .open-auth {
+          width: 100%;
+        }
+        .hero {
+          grid-template-columns: 1fr;
+          padding: 3rem 1rem 2rem;
+        }
+        .filters {
+          grid-template-columns: 1fr;
+        }
+        .hero-stats {
+          flex-direction: column;
+          align-items: stretch;
+        }
+        .card-actions,
+        .step-actions {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+    <link
+      rel="stylesheet"
+      href="style.css"
+      media="print"
+      onload="
+        this.media = 'all';
+        this.onload = null;
+      "
+    />
     <link
       rel="stylesheet"
       href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
@@ -18,22 +355,37 @@
   </head>
 
   <body>
-    <!-- HEADER -->
     <header class="header" role="banner">
       <div class="logo">
         <img src="logo.png" alt="Logo Plataforma" />
         <span>Plataforma Cupos Escolares</span>
       </div>
-      <button
-        class="menu-toggle"
-        id="menuToggle"
-        aria-label="Abrir menú"
-        aria-expanded="false"
-      >
-        <span></span>
-        <span></span>
-        <span></span>
-      </button>
+
+      <div class="header-actions">
+        <div class="system-clock" id="horaActual" aria-live="polite">
+          --:--:--
+        </div>
+        <button
+          class="theme-toggle"
+          id="themeToggle"
+          type="button"
+          aria-label="Cambiar modo oscuro"
+        >
+          🌙
+        </button>
+        <button
+          class="menu-toggle"
+          id="menuToggle"
+          aria-label="Abrir menú"
+          aria-expanded="false"
+          type="button"
+        >
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </div>
+
       <nav
         class="nav-container"
         id="navContainer"
@@ -41,554 +393,946 @@
         aria-label="Navegación principal"
       >
         <ul class="nav-links">
-          <li><a href="#inicio" class="auth-required">Inicio</a></li>
-          <li><a href="#registro">Registro</a></li>
-          <li><a href="#requisitos" class="auth-required">Requisitos</a></li>
-          <li><a href="#inscripcion" class="auth-required">Formulario</a></li>
-          <li><a href="#login">Login</a></li>
-          <li><a href="#estado" class="auth-required">Estado</a></li>
-          <li><a href="#dashboard" class="auth-required">Dashboard</a></li>
+          <li><a href="#inicio">Inicio</a></li>
+          <li><a href="#busqueda">Buscar colegios</a></li>
+          <li><a href="#como-funciona">¿Cómo funciona?</a></li>
+          <li><a href="#requisitos">Requisitos</a></li>
+          <li><a href="#estado">Consultar solicitud</a></li>
           <li>
-            <button id="btnLogout" class="btn-logout auth-required">
-              Cerrar Sesión
+            <button
+              class="open-auth btn-login"
+              type="button"
+              data-auth-target="login"
+            >
+              Iniciar sesión
+            </button>
+          </li>
+          <li class="auth-only">
+            <button id="btnLogout" class="btn-logout" type="button">
+              Cerrar sesión
             </button>
           </li>
         </ul>
       </nav>
     </header>
 
-    <!-- HERO -->
-    <section class="hero auth-required" id="inicio">
-      <h1>Asignación Digital de Cupos Escolares</h1>
-      <p>Facilitamos el acceso transparente y rápido a la educación pública.</p>
-      <div class="hora-container">
-        <h2 id="horaActual"></h2>
-        <p id="mensajeHora"></p>
-      </div>
-    </section>
+    <main>
+      <section class="hero" id="inicio">
+        <div class="hero-copy">
+          <span class="eyebrow">Asignación digital de cupos escolares</span>
+          <h1>Encuentra y solicita cupos escolares en el Valle del Cauca</h1>
+          <p>
+            Explora instituciones públicas con cupos disponibles, filtra según
+            tu ciudad y grado, y completa tu solicitud de forma clara y rápida.
+          </p>
 
-    <!-- REGISTRO -->
-    <section class="section login-only" id="registro">
-      <h2>Crear Cuenta</h2>
-      <form id="formRegistro" aria-labelledby="registro">
-        <div class="form-group">
-          <label for="nombreRegistro">Nombre Completo *</label>
-          <input
-            type="text"
-            id="nombreRegistro"
-            placeholder="Juan Pérez"
-            required
-          />
-          <span class="error-msg" id="errorNombre"></span>
-        </div>
-        <div class="form-group">
-          <label for="emailRegistro">Email *</label>
-          <input
-            type="email"
-            id="emailRegistro"
-            placeholder="correo@ejemplo.com"
-            required
-          />
-          <span class="error-msg" id="errorEmailReg"></span>
-        </div>
-        <div class="form-group">
-          <label for="passwordRegistro">Contraseña *</label>
-          <input
-            type="password"
-            id="passwordRegistro"
-            placeholder="Mínimo 6 caracteres"
-            required
-          />
-          <span class="error-msg" id="errorPassReg"></span>
-        </div>
-        <div class="form-group">
-          <label for="rolRegistro">Rol *</label>
-          <select id="rolRegistro" required>
-            <option value="">Seleccione Rol</option>
-            <option value="administrador">Administrador</option>
-            <option value="padre">Padre/Acudiente</option>
-            <option value="institucion">Institución</option>
-          </select>
-          <span class="error-msg" id="errorRol"></span>
-        </div>
-        <button type="submit" class="btn btn-primary">Registrarse</button>
-      </form>
-    </section>
-
-    <!-- LOGIN -->
-    <section class="section login-only" id="login">
-      <h2>Iniciar Sesión</h2>
-      <form id="formLogin" aria-labelledby="login">
-        <div class="form-group">
-          <label for="emailLogin">Email *</label>
-          <input
-            type="email"
-            id="emailLogin"
-            placeholder="correo@ejemplo.com"
-            required
-          />
-          <span class="error-msg" id="errorEmailLogin"></span>
-        </div>
-        <div class="form-group">
-          <label for="passwordLogin">Contraseña *</label>
-          <input
-            type="password"
-            id="passwordLogin"
-            placeholder="Tu contraseña"
-            required
-          />
-          <span class="error-msg" id="errorPassLogin"></span>
-        </div>
-        <button type="submit" class="btn btn-primary">Ingresar</button>
-        <p class="form-hint">
-          ¿No tienes cuenta? <a href="#registro">Regístrate aquí</a>
-        </p>
-      </form>
-    </section>
-
-    <!-- BÚSQUEDA DE COLEGIOS-->
-    <section class="section auth-required" id="busqueda">
-      <h2>Cupos Disponibles</h2>
-      <p>Escuelas con cupos disponibles en el Valle del Cauca</p>
-
-      <div class="filtro-container">
-        <input
-          type="text"
-          id="buscadorColegios"
-          placeholder="🔍 Buscar por nombre o ciudad..."
-          class="buscador"
-        />
-      </div>
-
-      <div class="contenedor-colegios">
-        <div class="colegio-card">
-          <div class="card-info">
-            <h3>Institución Educativa Santa Librada</h3>
-            <p>📍 Cali - Nivel secundaria</p>
-            <p class="cupos">📚 Cupos: 15</p>
+          <div class="hero-actions">
+            <a href="#busqueda" class="btn btn-primary"
+              >Buscar cupos disponibles</a
+            >
+            <a href="#como-funciona" class="btn btn-secondary"
+              >Ver cómo funciona</a
+            >
           </div>
-          <button
-            class="btn btn-secondary inscribirse-btn"
-            data-colegio="Institución Educativa Santa Librada"
-            aria-label="Inscribirse en Santa Librada"
-          >
-            Inscribirse
-          </button>
+
+          <ul class="hero-stats">
+            <li><strong>200+</strong><span>instituciones</span></li>
+            <li>
+              <strong>12 ciudades</strong><span>del Valle del Cauca</span>
+            </li>
+            <li><strong>48h</strong><span>respuesta estimada</span></li>
+          </ul>
         </div>
 
-        <div class="colegio-card">
-          <div class="card-info">
-            <h3>Institución Educativa Técnico Industrial</h3>
-            <p>📍 Cali - Nivel media técnica</p>
-            <p class="cupos">📚 Cupos: 8</p>
-          </div>
-          <button
-            class="btn btn-secondary inscribirse-btn"
-            data-colegio="Institución Educativa Técnico Industrial"
-            aria-label="Inscribirse en Técnico Industrial"
-          >
-            Inscribirse
-          </button>
-        </div>
-
-        <div class="colegio-card">
-          <div class="card-info">
-            <h3>Institución Educativa Jorge Isaacs</h3>
-            <p>📍 Cali - Nivel primaria</p>
-            <p class="cupos">📚 Cupos: 20</p>
-          </div>
-          <button
-            class="btn btn-secondary inscribirse-btn"
-            data-colegio="Institución Educativa Jorge Isaacs"
-            aria-label="Inscribirse en Jorge Isaacs"
-          >
-            Inscribirse
-          </button>
-        </div>
-
-        <div class="colegio-card">
-          <div class="card-info">
-            <h3>Institución Educativa Ciudad de Cartago</h3>
-            <p>📍 Cartago - Nivel secundaria</p>
-            <p class="cupos">📚 Cupos: 12</p>
-          </div>
-          <button
-            class="btn btn-secondary inscribirse-btn"
-            data-colegio="Institución Educativa Ciudad de Cartago"
-            aria-label="Inscribirse en Ciudad de Cartago"
-          >
-            Inscribirse
-          </button>
-        </div>
-
-        <div class="colegio-card">
-          <div class="card-info">
-            <h3>Institución Educativa Tulio Enrique Tascón</h3>
-            <p>📍 Buga - Nivel primaria</p>
-            <p class="cupos">📚 Cupos: 18</p>
-          </div>
-          <button
-            class="btn btn-secondary inscribirse-btn"
-            data-colegio="Institución Educativa Tulio Enrique Tascón"
-            aria-label="Inscribirse en Tulio Enrique Tascón"
-          >
-            Inscribirse
-          </button>
-        </div>
-
-        <div class="colegio-card">
-          <div class="card-info">
-            <h3>Institución Educativa Francisco José de Caldas</h3>
-            <p>📍 Palmira - Nivel secundaria</p>
-            <p class="cupos">📚 Cupos: 10</p>
-          </div>
-          <button
-            class="btn btn-secondary inscribirse-btn"
-            data-colegio="Institución Educativa Francisco José de Caldas"
-            aria-label="Inscribirse en Francisco José de Caldas"
-          >
-            Inscribirse
-          </button>
-        </div>
-      </div>
-
-      <div class="mapa-seccion">
-        <h3>Ubicación de Instituciones</h3>
         <div
-          id="mapa"
-          role="region"
-          aria-label="Mapa de ubicación de colegios"
-        ></div>
-      </div>
-    </section>
-
-    <!-- REQUISITOS -->
-    <section class="section auth-required" id="requisitos">
-      <h2>Requisitos para Inscripción</h2>
-      <div class="requisitos-lista">
-        <div class="requisito-item">
-          <span class="requisito-icon">📋</span>
-          <div>
-            <h4>Documento de Identidad</h4>
-            <p>
-              Cédula de ciudadanía o tarjeta de identidad del estudiante
-              escaneada
-            </p>
-          </div>
-        </div>
-        <div class="requisito-item">
-          <span class="requisito-icon">👤</span>
-          <div>
-            <h4>Documento del Acudiente</h4>
-            <p>Cédula de ciudadanía del padre/madre o acudiente escaneada</p>
-          </div>
-        </div>
-        <div class="requisito-item">
-          <span class="requisito-icon">📚</span>
-          <div>
-            <h4>Certificado de Estudios</h4>
-            <p>Certificado de calificaciones del año anterior</p>
-          </div>
-        </div>
-        <div class="requisito-item">
-          <span class="requisito-icon">🏠</span>
-          <div>
-            <h4>Comprobante de Residencia</h4>
-            <p>
-              Factura de servicios públicos (agua, luz) a nombre de la familia
-            </p>
-          </div>
-        </div>
-        <div class="requisito-item">
-          <span class="requisito-icon">📸</span>
-          <div>
-            <h4>Foto del Estudiante</h4>
-            <p>Foto digital 3x4 con fondo blanco en formato JPG o PNG</p>
-          </div>
-        </div>
-        <div class="requisito-item">
-          <span class="requisito-icon">💉</span>
-          <div>
-            <h4>Carné de Vacunación</h4>
-            <p>Comprobante de vacunación actualizado</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- INSCRIPCIÓN -->
-    <section class="section auth-required" id="inscripcion">
-      <h2>Formulario de Inscripción</h2>
-
-      <form id="formInscripcion" class="formulario-inscripcion">
-        <!-- COLEGIO SELECCIONADO -->
-        <div class="bloque">
-          <h3>Información del Colegio</h3>
-          <div class="form-group">
-            <label for="colegioSeleccionado">Colegio Seleccionado *</label>
-            <input type="text" id="colegioSeleccionado" readonly required />
-            <span class="error-msg" id="errorColegio"></span>
-          </div>
-        </div>
-
-        <!-- DATOS DEL ESTUDIANTE -->
-        <div class="bloque">
-          <h3>Datos del Estudiante</h3>
-          <div class="form-row">
-            <div class="form-group">
-              <label for="nombreEstudiante">Nombre y Apellido *</label>
-              <input
-                type="text"
-                id="nombreEstudiante"
-                placeholder="Juan Carlos Pérez"
-                required
-              />
-              <span class="error-msg"></span>
-            </div>
-            <div class="form-group">
-              <label for="cedulaEstudiante">Cédula *</label>
-              <input
-                type="text"
-                id="cedulaEstudiante"
-                placeholder="1234567890"
-                required
-              />
-              <span class="error-msg"></span>
+          class="hero-visual"
+          aria-label="Imagen de una institución educativa"
+        >
+          <div class="hero-image-card">
+            <img
+              src="https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&w=900&q=80"
+              alt="Estudiantes en una institución educativa"
+            />
+            <div class="mini-stat">
+              <span class="mini-label">Disponibilidad</span>
+              <strong>+500 cupos</strong>
             </div>
           </div>
+        </div>
+      </section>
 
-          <div class="form-row">
-            <div class="form-group">
-              <label for="fechaNacimiento">Fecha de Nacimiento *</label>
-              <input type="date" id="fechaNacimiento" required />
-              <span class="error-msg"></span>
-            </div>
-            <div class="form-group">
-              <label for="genero">Género *</label>
-              <select id="genero" required>
-                <option value="">Seleccione</option>
-                <option value="masculino">Masculino</option>
-                <option value="femenino">Femenino</option>
-                <option value="otro">Otro</option>
-              </select>
-              <span class="error-msg"></span>
-            </div>
+      <section class="section" id="busqueda">
+        <div class="section-header">
+          <div>
+            <p class="section-kicker">Búsqueda</p>
+            <h2>Cupos disponibles</h2>
           </div>
+          <span class="pill">Actualizado: 09/08/2026</span>
+        </div>
 
-          <div class="form-row">
-            <div class="form-group">
-              <label for="lugarNacimiento">Lugar de Nacimiento *</label>
-              <input
-                type="text"
-                id="lugarNacimiento"
-                placeholder="Cali"
-                required
-              />
-              <span class="error-msg"></span>
-            </div>
-            <div class="form-group">
-              <label for="grado">Grado a Cursar *</label>
-              <select id="grado" required>
-                <option value="">Seleccione</option>
-                <option value="preescolar">Preescolar</option>
-                <option value="primero">Primero</option>
-                <option value="segundo">Segundo</option>
-                <option value="tercero">Tercero</option>
-                <option value="cuarto">Cuarto</option>
-                <option value="quinto">Quinto</option>
-                <option value="sexto">Sexto</option>
-                <option value="septimo">Séptimo</option>
-                <option value="octavo">Octavo</option>
-                <option value="noveno">Noveno</option>
-                <option value="decimo">Décimo</option>
-                <option value="once">Once</option>
-              </select>
-              <span class="error-msg"></span>
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label for="emailEstudiante">Correo Electrónico *</label>
+        <div class="filters" aria-label="Filtros de búsqueda">
+          <div class="field-group">
+            <label for="buscadorColegios">Buscar</label>
             <input
+              id="buscadorColegios"
+              type="text"
+              placeholder="Nombre o ciudad..."
+            />
+          </div>
+
+          <div class="field-group">
+            <label for="cityFilter">Ciudad</label>
+            <select id="cityFilter">
+              <option value="">Todas</option>
+              <option value="Cali">Cali</option>
+              <option value="Palmira">Palmira</option>
+              <option value="Buga">Buga</option>
+              <option value="Cartago">Cartago</option>
+              <option value="Tuluá">Tuluá</option>
+              <option value="Yumbo">Yumbo</option>
+              <option value="Jamundí">Jamundí</option>
+              <option value="La Unión">La Unión</option>
+              <option value="Zarzal">Zarzal</option>
+              <option value="Ginebra">Ginebra</option>
+              <option value="Sevilla">Sevilla</option>
+              <option value="Dagua">Dagua</option>
+            </select>
+          </div>
+
+          <div class="field-group">
+            <label for="gradeFilter">Grado</label>
+            <select id="gradeFilter">
+              <option value="">Todos</option>
+              <option value="Primaria">Primaria</option>
+              <option value="Secundaria">Secundaria</option>
+              <option value="Media técnica">Media técnica</option>
+            </select>
+          </div>
+
+          <div class="field-group">
+            <label for="levelFilter">Nivel educativo</label>
+            <select id="levelFilter">
+              <option value="">Todos</option>
+              <option value="Básica primaria">Básica primaria</option>
+              <option value="Básica secundaria">Básica secundaria</option>
+              <option value="Media">Media</option>
+            </select>
+          </div>
+
+          <label class="availability-toggle" for="availableOnly">
+            <input id="availableOnly" type="checkbox" />
+            <span>Cupos disponibles</span>
+          </label>
+        </div>
+
+        <div class="summary-strip" aria-label="Resumen de disponibilidad">
+          <div class="summary-item summary-primary">
+            <span>Total de cupos</span>
+            <strong>500</strong>
+          </div>
+          <div class="summary-item">
+            <span>Ciudades con vacantes</span>
+            <strong>12</strong>
+          </div>
+          <div class="summary-item">
+            <span>Instituciones activas</span>
+            <strong>12</strong>
+          </div>
+          <div class="summary-item">
+            <span>Respuesta estimada</span>
+            <strong>48h</strong>
+          </div>
+        </div>
+
+        <div class="results-grid" id="colegioList">
+          <article
+            class="colegio-card"
+            data-city="Cali"
+            data-grade="Secundaria"
+            data-level="Media"
+            data-availability="70"
+          >
+            <div class="card-header"><span class="badge">Disponible</span></div>
+            <div class="card-body">
+              <h3>Institución Educativa Santa Librada</h3>
+              <p>📍 Cali</p>
+              <p>🎓 Secundaria</p>
+              <p>📚 70 cupos disponibles</p>
+              <p class="meta">Actualizado: 09/08/2026</p>
+            </div>
+            <div class="card-actions">
+              <button type="button" class="btn btn-secondary ghost">
+                Ver detalles
+              </button>
+              <button
+                type="button"
+                class="btn btn-primary inscribirse-btn"
+                data-colegio="Institución Educativa Santa Librada"
+              >
+                Solicitar cupo
+              </button>
+            </div>
+          </article>
+
+          <article
+            class="colegio-card"
+            data-city="Palmira"
+            data-grade="Primaria"
+            data-level="Básica primaria"
+            data-availability="45"
+          >
+            <div class="card-header"><span class="badge">Disponible</span></div>
+            <div class="card-body">
+              <h3>Institución Educativa Las Flores</h3>
+              <p>📍 Palmira</p>
+              <p>🎓 Primaria</p>
+              <p>📚 45 cupos disponibles</p>
+              <p class="meta">Actualizado: 09/08/2026</p>
+            </div>
+            <div class="card-actions">
+              <button type="button" class="btn btn-secondary ghost">
+                Ver detalles
+              </button>
+              <button
+                type="button"
+                class="btn btn-primary inscribirse-btn"
+                data-colegio="Institución Educativa Las Flores"
+              >
+                Solicitar cupo
+              </button>
+            </div>
+          </article>
+
+          <article
+            class="colegio-card"
+            data-city="Buga"
+            data-grade="Primaria"
+            data-level="Básica primaria"
+            data-availability="40"
+          >
+            <div class="card-header"><span class="badge">Disponible</span></div>
+            <div class="card-body">
+              <h3>Institución Educativa Tulio Enrique Tascón</h3>
+              <p>📍 Buga</p>
+              <p>🎓 Primaria</p>
+              <p>📚 40 cupos disponibles</p>
+              <p class="meta">Actualizado: 09/08/2026</p>
+            </div>
+            <div class="card-actions">
+              <button type="button" class="btn btn-secondary ghost">
+                Ver detalles
+              </button>
+              <button
+                type="button"
+                class="btn btn-primary inscribirse-btn"
+                data-colegio="Institución Educativa Tulio Enrique Tascón"
+              >
+                Solicitar cupo
+              </button>
+            </div>
+          </article>
+
+          <article
+            class="colegio-card"
+            data-city="Cartago"
+            data-grade="Secundaria"
+            data-level="Básica secundaria"
+            data-availability="35"
+          >
+            <div class="card-header"><span class="badge">Disponible</span></div>
+            <div class="card-body">
+              <h3>Institución Educativa Ciudad de Cartago</h3>
+              <p>📍 Cartago</p>
+              <p>🎓 Secundaria</p>
+              <p>📚 35 cupos disponibles</p>
+              <p class="meta">Actualizado: 09/08/2026</p>
+            </div>
+            <div class="card-actions">
+              <button type="button" class="btn btn-secondary ghost">
+                Ver detalles
+              </button>
+              <button
+                type="button"
+                class="btn btn-primary inscribirse-btn"
+                data-colegio="Institución Educativa Ciudad de Cartago"
+              >
+                Solicitar cupo
+              </button>
+            </div>
+          </article>
+
+          <article
+            class="colegio-card"
+            data-city="Tuluá"
+            data-grade="Media técnica"
+            data-level="Media"
+            data-availability="50"
+          >
+            <div class="card-header"><span class="badge">Disponible</span></div>
+            <div class="card-body">
+              <h3>Institución Educativa Jorge Robledo</h3>
+              <p>📍 Tuluá</p>
+              <p>🎓 Media técnica</p>
+              <p>📚 50 cupos disponibles</p>
+              <p class="meta">Actualizado: 09/08/2026</p>
+            </div>
+            <div class="card-actions">
+              <button type="button" class="btn btn-secondary ghost">
+                Ver detalles
+              </button>
+              <button
+                type="button"
+                class="btn btn-primary inscribirse-btn"
+                data-colegio="Institución Educativa Jorge Robledo"
+              >
+                Solicitar cupo
+              </button>
+            </div>
+          </article>
+
+          <article
+            class="colegio-card"
+            data-city="Yumbo"
+            data-grade="Primaria"
+            data-level="Básica primaria"
+            data-availability="42"
+          >
+            <div class="card-header"><span class="badge">Disponible</span></div>
+            <div class="card-body">
+              <h3>Institución Educativa Simón Bolívar</h3>
+              <p>📍 Yumbo</p>
+              <p>🎓 Primaria</p>
+              <p>📚 42 cupos disponibles</p>
+              <p class="meta">Actualizado: 09/08/2026</p>
+            </div>
+            <div class="card-actions">
+              <button type="button" class="btn btn-secondary ghost">
+                Ver detalles
+              </button>
+              <button
+                type="button"
+                class="btn btn-primary inscribirse-btn"
+                data-colegio="Institución Educativa Simón Bolívar"
+              >
+                Solicitar cupo
+              </button>
+            </div>
+          </article>
+
+          <article
+            class="colegio-card"
+            data-city="Jamundí"
+            data-grade="Secundaria"
+            data-level="Básica secundaria"
+            data-availability="36"
+          >
+            <div class="card-header"><span class="badge">Disponible</span></div>
+            <div class="card-body">
+              <h3>Institución Educativa San José</h3>
+              <p>📍 Jamundí</p>
+              <p>🎓 Secundaria</p>
+              <p>📚 36 cupos disponibles</p>
+              <p class="meta">Actualizado: 09/08/2026</p>
+            </div>
+            <div class="card-actions">
+              <button type="button" class="btn btn-secondary ghost">
+                Ver detalles
+              </button>
+              <button
+                type="button"
+                class="btn btn-primary inscribirse-btn"
+                data-colegio="Institución Educativa San José"
+              >
+                Solicitar cupo
+              </button>
+            </div>
+          </article>
+
+          <article
+            class="colegio-card"
+            data-city="La Unión"
+            data-grade="Primaria"
+            data-level="Básica primaria"
+            data-availability="32"
+          >
+            <div class="card-header"><span class="badge">Disponible</span></div>
+            <div class="card-body">
+              <h3>Institución Educativa La Unión</h3>
+              <p>📍 La Unión</p>
+              <p>🎓 Primaria</p>
+              <p>📚 32 cupos disponibles</p>
+              <p class="meta">Actualizado: 09/08/2026</p>
+            </div>
+            <div class="card-actions">
+              <button type="button" class="btn btn-secondary ghost">
+                Ver detalles
+              </button>
+              <button
+                type="button"
+                class="btn btn-primary inscribirse-btn"
+                data-colegio="Institución Educativa La Unión"
+              >
+                Solicitar cupo
+              </button>
+            </div>
+          </article>
+
+          <article
+            class="colegio-card"
+            data-city="Zarzal"
+            data-grade="Secundaria"
+            data-level="Media"
+            data-availability="28"
+          >
+            <div class="card-header"><span class="badge">Disponible</span></div>
+            <div class="card-body">
+              <h3>Institución Educativa Ciudad de Zarzal</h3>
+              <p>📍 Zarzal</p>
+              <p>🎓 Secundaria</p>
+              <p>📚 28 cupos disponibles</p>
+              <p class="meta">Actualizado: 09/08/2026</p>
+            </div>
+            <div class="card-actions">
+              <button type="button" class="btn btn-secondary ghost">
+                Ver detalles
+              </button>
+              <button
+                type="button"
+                class="btn btn-primary inscribirse-btn"
+                data-colegio="Institución Educativa Ciudad de Zarzal"
+              >
+                Solicitar cupo
+              </button>
+            </div>
+          </article>
+
+          <article
+            class="colegio-card"
+            data-city="Ginebra"
+            data-grade="Primaria"
+            data-level="Básica primaria"
+            data-availability="30"
+          >
+            <div class="card-header"><span class="badge">Disponible</span></div>
+            <div class="card-body">
+              <h3>Institución Educativa Ginebra</h3>
+              <p>📍 Ginebra</p>
+              <p>🎓 Primaria</p>
+              <p>📚 30 cupos disponibles</p>
+              <p class="meta">Actualizado: 09/08/2026</p>
+            </div>
+            <div class="card-actions">
+              <button type="button" class="btn btn-secondary ghost">
+                Ver detalles
+              </button>
+              <button
+                type="button"
+                class="btn btn-primary inscribirse-btn"
+                data-colegio="Institución Educativa Ginebra"
+              >
+                Solicitar cupo
+              </button>
+            </div>
+          </article>
+
+          <article
+            class="colegio-card"
+            data-city="Sevilla"
+            data-grade="Media técnica"
+            data-level="Media"
+            data-availability="26"
+          >
+            <div class="card-header"><span class="badge">Disponible</span></div>
+            <div class="card-body">
+              <h3>Institución Educativa de Sevilla</h3>
+              <p>📍 Sevilla</p>
+              <p>🎓 Media técnica</p>
+              <p>📚 26 cupos disponibles</p>
+              <p class="meta">Actualizado: 09/08/2026</p>
+            </div>
+            <div class="card-actions">
+              <button type="button" class="btn btn-secondary ghost">
+                Ver detalles
+              </button>
+              <button
+                type="button"
+                class="btn btn-primary inscribirse-btn"
+                data-colegio="Institución Educativa de Sevilla"
+              >
+                Solicitar cupo
+              </button>
+            </div>
+          </article>
+
+          <article
+            class="colegio-card"
+            data-city="Dagua"
+            data-grade="Secundaria"
+            data-level="Media"
+            data-availability="66"
+          >
+            <div class="card-header"><span class="badge">Disponible</span></div>
+            <div class="card-body">
+              <h3>Institución Educativa de Dagua</h3>
+              <p>📍 Dagua</p>
+              <p>🎓 Secundaria</p>
+              <p>📚 66 cupos disponibles</p>
+              <p class="meta">Actualizado: 09/08/2026</p>
+            </div>
+            <div class="card-actions">
+              <button type="button" class="btn btn-secondary ghost">
+                Ver detalles
+              </button>
+              <button
+                type="button"
+                class="btn btn-primary inscribirse-btn"
+                data-colegio="Institución Educativa de Dagua"
+              >
+                Solicitar cupo
+              </button>
+            </div>
+          </article>
+        </div>
+
+        <div class="mapa-seccion">
+          <h3>Ubicación de instituciones</h3>
+          <div id="mapa" aria-label="Mapa con instituciones educativas"></div>
+        </div>
+      </section>
+
+      <section class="section" id="como-funciona">
+        <p class="section-kicker">Proceso</p>
+        <h2>¿Cómo solicitar un cupo?</h2>
+        <div class="steps-grid">
+          <article class="step-card">
+            <span class="step-number">1</span>
+            <h3>Busca una institución</h3>
+            <p>
+              Encuentra colegios públicos con disponibilidad según tu ciudad y
+              grado.
+            </p>
+          </article>
+          <article class="step-card">
+            <span class="step-number">2</span>
+            <h3>Revisa los requisitos</h3>
+            <p>
+              Consulta los documentos necesarios del estudiante y del acudiente.
+            </p>
+          </article>
+          <article class="step-card">
+            <span class="step-number">3</span>
+            <h3>Envía tu solicitud</h3>
+            <p>Completa el formulario y adjunta los documentos requeridos.</p>
+          </article>
+          <article class="step-card">
+            <span class="step-number">4</span>
+            <h3>Consulta el estado</h3>
+            <p>Realiza seguimiento a tu solicitud desde la plataforma.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section" id="requisitos">
+        <p class="section-kicker">Requisitos</p>
+        <h2>Documentos para la inscripción</h2>
+        <div class="requisitos-lista">
+          <div class="requisito-item">
+            <span class="requisito-icon">📋</span>
+            <div>
+              <h4>Documento de identidad</h4>
+              <p>
+                Cédula de ciudadanía o tarjeta de identidad del estudiante y del
+                acudiente.
+              </p>
+            </div>
+          </div>
+          <div class="requisito-item">
+            <span class="requisito-icon">📚</span>
+            <div>
+              <h4>Certificado de estudios</h4>
+              <p>Certificado de notas o constancia de continuidad académica.</p>
+            </div>
+          </div>
+          <div class="requisito-item">
+            <span class="requisito-icon">🏠</span>
+            <div>
+              <h4>Comprobante de residencia</h4>
+              <p>Factura de servicios o recibo del domicilio familiar.</p>
+            </div>
+          </div>
+          <div class="requisito-item">
+            <span class="requisito-icon">📸</span>
+            <div>
+              <h4>Foto del estudiante</h4>
+              <p>Fotografía reciente en formato JPG o PNG con fondo claro.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section auth-required" id="inscripcion">
+        <p class="section-kicker">Proceso</p>
+        <h2>Formulario de inscripción por pasos</h2>
+
+        <div class="stepper" aria-label="Paso del formulario">
+          <span class="step active">1</span>
+          <span class="step">2</span>
+          <span class="step">3</span>
+          <span class="step">4</span>
+          <span class="step">5</span>
+        </div>
+
+        <form id="formInscripcion" class="formulario-inscripcion">
+          <div class="form-step active" data-step="1">
+            <div class="bloque">
+              <h3>1. Colegio</h3>
+              <div class="form-group">
+                <label for="colegioSeleccionado">Colegio seleccionado *</label>
+                <input id="colegioSeleccionado" type="text" readonly required />
+              </div>
+            </div>
+          </div>
+
+          <div class="form-step" data-step="2">
+            <div class="bloque">
+              <h3>2. Estudiante</h3>
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="nombreEstudiante">Nombre completo *</label>
+                  <input
+                    id="nombreEstudiante"
+                    type="text"
+                    placeholder="Juan Carlos Pérez"
+                    required
+                  />
+                </div>
+                <div class="form-group">
+                  <label for="cedulaEstudiante">Cédula *</label>
+                  <input
+                    id="cedulaEstudiante"
+                    type="text"
+                    placeholder="1234567890"
+                    required
+                  />
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="fechaNacimiento">Fecha de nacimiento *</label>
+                  <input id="fechaNacimiento" type="date" required />
+                </div>
+                <div class="form-group">
+                  <label for="grado">Grado a cursar *</label>
+                  <select id="grado" required>
+                    <option value="">Seleccione</option>
+                    <option value="Primero">Primero</option>
+                    <option value="Segundo">Segundo</option>
+                    <option value="Tercero">Tercero</option>
+                    <option value="Cuarto">Cuarto</option>
+                    <option value="Quinto">Quinto</option>
+                    <option value="Sexto">Sexto</option>
+                    <option value="Séptimo">Séptimo</option>
+                    <option value="Octavo">Octavo</option>
+                    <option value="Noveno">Noveno</option>
+                    <option value="Décimo">Décimo</option>
+                    <option value="Once">Once</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-step" data-step="3">
+            <div class="bloque">
+              <h3>3. Acudiente</h3>
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="nombreAcudiente">Nombre del acudiente *</label>
+                  <input
+                    id="nombreAcudiente"
+                    type="text"
+                    placeholder="María García"
+                    required
+                  />
+                </div>
+                <div class="form-group">
+                  <label for="telefonoAcudiente">Teléfono *</label>
+                  <input
+                    id="telefonoAcudiente"
+                    type="tel"
+                    placeholder="3001234567"
+                    required
+                  />
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="emailAcudiente">Email *</label>
+                  <input
+                    id="emailAcudiente"
+                    type="email"
+                    placeholder="acudiente@ejemplo.com"
+                    required
+                  />
+                </div>
+                <div class="form-group">
+                  <label for="direccion">Dirección *</label>
+                  <input
+                    id="direccion"
+                    type="text"
+                    placeholder="Calle 10 #20-30"
+                    required
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-step" data-step="4">
+            <div class="bloque">
+              <h3>4. Documentos</h3>
+              <div class="file-input-wrapper">
+                <input
+                  type="file"
+                  id="fotoEstudiante"
+                  accept="image/*"
+                  required
+                />
+                <label for="fotoEstudiante" class="file-label"
+                  >📸 Subir foto del estudiante</label
+                >
+                <span id="fotoNombre" class="file-name"></span>
+              </div>
+              <div class="form-group">
+                <label for="documentoTipo">Tipo de documento *</label>
+                <select id="documentoTipo" required>
+                  <option value="">Seleccione</option>
+                  <option value="Tarjeta de identidad">
+                    Tarjeta de identidad
+                  </option>
+                  <option value="Cédula">Cédula</option>
+                  <option value="Certificado">Certificado</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-step" data-step="5">
+            <div class="bloque">
+              <h3>5. Confirmación</h3>
+              <div class="confirmation-box">
+                <p>
+                  Revisa que la información esté correcta antes de enviar la
+                  solicitud.
+                </p>
+                <ul>
+                  <li>Institución: <strong id="confirmColegio">-</strong></li>
+                  <li>Estudiante: <strong id="confirmEstudiante">-</strong></li>
+                  <li>Acudiente: <strong id="confirmAcudiente">-</strong></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-actions step-actions">
+            <button class="btn btn-secondary" type="button" id="prevStep">
+              Anterior
+            </button>
+            <button class="btn btn-primary" type="button" id="nextStep">
+              Siguiente
+            </button>
+            <button
+              class="btn btn-primary hidden"
+              type="submit"
+              id="submitInscripcion"
+            >
+              Enviar solicitud
+            </button>
+          </div>
+        </form>
+      </section>
+
+      <section class="section auth-required" id="estado">
+        <p class="section-kicker">Consulta</p>
+        <h2>Consultar estado de solicitud</h2>
+        <form id="formConsultaEstado">
+          <div class="form-group">
+            <label for="correoConsulta">Email registrado *</label>
+            <input
+              id="correoConsulta"
               type="email"
-              id="emailEstudiante"
-              placeholder="estudiante@ejemplo.com"
+              placeholder="tu@email.com"
               required
             />
-            <span class="error-msg"></span>
+          </div>
+          <button type="submit" class="btn btn-primary">Consultar</button>
+        </form>
+        <div
+          id="resultadoEstado"
+          class="resultado-container"
+          role="status"
+          aria-live="polite"
+        ></div>
+      </section>
+
+      <section class="section auth-required" id="dashboard">
+        <p class="section-kicker">Panel</p>
+        <h2>Dashboard</h2>
+        <div class="dashboard-grid">
+          <div class="card">
+            <h3>📋 Mis solicitudes</h3>
+            <div id="misSolicitudes">
+              <p>
+                No hay solicitudes registradas.
+                <a href="#inscripcion">Crear una nueva</a>
+              </p>
+            </div>
+          </div>
+          <div class="card">
+            <h3>🔔 Notificaciones</h3>
+            <div id="notificaciones">
+              <p>No tienes notificaciones nuevas.</p>
+            </div>
+          </div>
+          <div class="card chart-card">
+            <h3>📊 Estadísticas</h3>
+            <div class="chart-bars" aria-label="Gráfico de solicitudes por mes">
+              <div class="bar-wrap">
+                <span class="bar-label">Ene</span
+                ><span class="bar" style="--value: 75%"></span>
+              </div>
+              <div class="bar-wrap">
+                <span class="bar-label">Feb</span
+                ><span class="bar" style="--value: 58%"></span>
+              </div>
+              <div class="bar-wrap">
+                <span class="bar-label">Mar</span
+                ><span class="bar" style="--value: 88%"></span>
+              </div>
+              <div class="bar-wrap">
+                <span class="bar-label">Abr</span
+                ><span class="bar" style="--value: 67%"></span>
+              </div>
+            </div>
+            <div class="stats">
+              <p>
+                Solicitudes Totales: <strong id="totalSolicitudes">0</strong>
+              </p>
+              <p>Pendientes: <strong id="solicitudesPendientes">0</strong></p>
+              <p>Aprobadas: <strong id="solicitudesAprobadas">0</strong></p>
+            </div>
           </div>
         </div>
+      </section>
+    </main>
 
-        <!-- DATOS DEL ACUDIENTE -->
-        <div class="bloque">
-          <h3>Datos del Acudiente/Padre</h3>
-          <div class="form-row">
-            <div class="form-group">
-              <label for="nombreAcudiente">Nombre y Apellido *</label>
-              <input
-                type="text"
-                id="nombreAcudiente"
-                placeholder="María García López"
-                required
-              />
-              <span class="error-msg"></span>
-            </div>
-            <div class="form-group">
-              <label for="cedulaAcudiente">Cédula *</label>
-              <input
-                type="text"
-                id="cedulaAcudiente"
-                placeholder="9876543210"
-                required
-              />
-              <span class="error-msg"></span>
-            </div>
-          </div>
+    <div class="auth-modal" id="authModal" aria-hidden="true">
+      <div class="auth-panel">
+        <button
+          class="modal-close"
+          id="closeAuthModal"
+          type="button"
+          aria-label="Cerrar ventana"
+        >
+          ×
+        </button>
 
-          <div class="form-row">
-            <div class="form-group">
-              <label for="telefonoAcudiente">Teléfono *</label>
-              <input
-                type="tel"
-                id="telefonoAcudiente"
-                placeholder="3001234567"
-                required
-              />
-              <span class="error-msg"></span>
-            </div>
-            <div class="form-group">
-              <label for="emailAcudiente">Email *</label>
-              <input
-                type="email"
-                id="emailAcudiente"
-                placeholder="acudiente@ejemplo.com"
-                required
-              />
-              <span class="error-msg"></span>
-            </div>
-          </div>
+        <div class="auth-tabs">
+          <button class="auth-tab active" type="button" data-auth-tab="login">
+            Iniciar sesión
+          </button>
+          <button class="auth-tab" type="button" data-auth-tab="register">
+            Crear cuenta
+          </button>
+        </div>
 
-          <div class="form-row">
-            <div class="form-group">
-              <label for="direccion">Dirección *</label>
-              <input
-                type="text"
-                id="direccion"
-                placeholder="Calle 10 #20-30"
-                required
-              />
-              <span class="error-msg"></span>
-            </div>
-            <div class="form-group">
-              <label for="ciudad">Ciudad *</label>
-              <input type="text" id="ciudad" placeholder="Cali" required />
-              <span class="error-msg"></span>
-            </div>
-          </div>
-
+        <form id="formLoginModal" class="auth-form active">
           <div class="form-group">
-            <label for="pais">País *</label>
-            <input type="text" id="pais" placeholder="Colombia" required />
-            <span class="error-msg"></span>
+            <label for="emailLoginModal">Correo electrónico *</label>
+            <input
+              id="emailLoginModal"
+              type="email"
+              placeholder="correo@ejemplo.com"
+              required
+            />
+            <span class="error-msg" id="errorEmailLogin"></span>
           </div>
-        </div>
+          <div class="form-group">
+            <label for="passwordLoginModal">Contraseña *</label>
+            <input
+              id="passwordLoginModal"
+              type="password"
+              placeholder="Tu contraseña"
+              required
+            />
+            <span class="error-msg" id="errorPassLogin"></span>
+          </div>
+          <button type="submit" class="btn btn-primary">Ingresar</button>
+          <p class="form-hint">
+            ¿No tienes cuenta?
+            <a href="#" class="switch-auth" data-auth-target="register"
+              >Regístrate aquí</a
+            >
+          </p>
+        </form>
 
-        <!-- FOTO -->
-        <div class="bloque">
-          <h3>Foto del Estudiante</h3>
-          <div class="file-input-wrapper">
-            <input type="file" id="fotoEstudiante" accept="image/*" required />
-            <label for="fotoEstudiante" class="file-label">
-              <span>📸 Seleccionar foto (JPG, PNG)</span>
-            </label>
-            <span id="fotoNombre" class="file-name"></span>
+        <form id="formRegistroModal" class="auth-form">
+          <div class="form-group">
+            <label for="nombreRegistroModal">Nombre completo *</label>
+            <input
+              id="nombreRegistroModal"
+              type="text"
+              placeholder="Juan Pérez"
+              required
+            />
+            <span class="error-msg" id="errorNombre"></span>
           </div>
-        </div>
-
-        <div class="form-actions">
-          <button type="submit" class="btn btn-primary">
-            Enviar Inscripción
-          </button>
-          <button type="reset" class="btn btn-secondary">
-            Limpiar Formulario
-          </button>
-        </div>
-      </form>
-    </section>
-
-    <!-- ESTADO -->
-    <section class="section auth-required" id="estado">
-      <h2>Consultar Estado de Solicitud</h2>
-      <form id="formConsultaEstado" aria-labelledby="estado">
-        <div class="form-group">
-          <label for="correoConsulta">Email Registrado *</label>
-          <input
-            type="email"
-            id="correoConsulta"
-            placeholder="tu@email.com"
-            required
-          />
-          <span class="error-msg" id="errorCorreoConsulta"></span>
-        </div>
-        <button type="submit" class="btn btn-primary">Consultar Estado</button>
-      </form>
-      <div
-        id="resultadoEstado"
-        class="resultado-container"
-        role="region"
-        aria-live="polite"
-        aria-label="Resultados de consulta"
-      ></div>
-    </section>
-
-    <!-- DASHBOARD -->
-    <section class="section auth-required" id="dashboard">
-      <h2>Panel de Usuario</h2>
-      <div class="dashboard-grid">
-        <div class="card">
-          <h3>📋 Mis Solicitudes</h3>
-          <div id="misSolicitudes">
-            <p>
-              No hay solicitudes registradas.
-              <a href="#inscripcion">Crear una nueva</a>
-            </p>
+          <div class="form-group">
+            <label for="emailRegistroModal">Correo electrónico *</label>
+            <input
+              id="emailRegistroModal"
+              type="email"
+              placeholder="correo@ejemplo.com"
+              required
+            />
+            <span class="error-msg" id="errorEmailReg"></span>
           </div>
-        </div>
-        <div class="card">
-          <h3>🔔 Notificaciones</h3>
-          <div id="notificaciones">
-            <p>No tienes notificaciones nuevas.</p>
+          <div class="form-group">
+            <label for="passwordRegistroModal">Contraseña *</label>
+            <input
+              id="passwordRegistroModal"
+              type="password"
+              placeholder="Mínimo 6 caracteres"
+              required
+            />
+            <span class="error-msg" id="errorPassReg"></span>
           </div>
-        </div>
-        <div class="card">
-          <h3>📊 Estadísticas</h3>
-          <div class="stats">
-            <p>Solicitudes Totales: <strong id="totalSolicitudes">0</strong></p>
-            <p>Pendientes: <strong id="solicitudesPendientes">0</strong></p>
-            <p>Aprobadas: <strong id="solicitudesAprobadas">0</strong></p>
+          <div class="form-group">
+            <label for="rolRegistroModal">Rol *</label>
+            <select id="rolRegistroModal" required>
+              <option value="">Seleccione</option>
+              <option value="padre">Padre/Acudiente</option>
+              <option value="institucion">Institución</option>
+              <option value="administrador">Administrador</option>
+            </select>
+            <span class="error-msg" id="errorRol"></span>
           </div>
-        </div>
+          <button type="submit" class="btn btn-primary">Crear cuenta</button>
+        </form>
       </div>
-    </section>
+    </div>
 
-    <!-- FOOTER -->
     <footer class="footer">
       © 2026 Plataforma Digital de Cupos Escolares - Proyecto Ingeniería de
       Sistemas
     </footer>
 
-    <!-- Leaflet JS -->
     <script
       src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
       integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
       crossorigin=""
+      defer
     ></script>
-
-    <!-- jQuery -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-    <!-- Scripts propios -->
-    <script src="script.js"></script>
-    <script src="animacion.js"></script>
+    <script src="script.js" defer></script>
   </body>
 </html>

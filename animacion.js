@@ -1,9 +1,3 @@
-/* ==================== SISTEMA DE AUTENTICACIÓN ==================== */
-
-// Nota: actualizarVisiblidad() está definida en script.js
-
-/* ==================== UTILIDADES ==================== */
-
 // Sistema de notificaciones Toast
 function mostrarToast(mensaje, tipo = "success", duracion = 3000) {
   const toast = document.createElement("div");
